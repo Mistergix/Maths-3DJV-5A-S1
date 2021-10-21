@@ -54,32 +54,36 @@ namespace ESGI.Triangulation
                 var currentPoint = points[i].position;
                 var newEdges = new List<Edge>();
 
-                foreach (var currentEdge in edges)
-                {
-                    var mid = currentEdge.MidPoint;
-                    var edgeToMid = new Edge(currentPoint, mid);
-
-                    var canSee = edges
-                        .Where(e => !e.Equals(currentEdge))
-                        .All(e => !Geom.Intersecting(edgeToMid, e));
-
-                    if (!canSee) continue;
-                    
-                    var edge1 = new Edge(currentEdge.p1, new Vertex(currentPoint));
-                    var edge2 = new Edge(currentEdge.p2, new Vertex(currentPoint));
-                            
-                    newEdges.Add(edge1);
-                    newEdges.Add(edge2);
-
-                    var tri = new Triangle(edge1.p1, edge1.p2, edge2.p1);
-                    triangles.Add(tri);
-
-                }
+                CheckForVisibleEdges(edges, currentPoint, newEdges, triangles);
 
                 edges.AddRange(newEdges);
             }
             
             return triangles;
+        }
+
+        private static void CheckForVisibleEdges(IReadOnlyCollection<Edge> edges, Vector2 currentPoint, ICollection<Edge> newEdges, ICollection<Triangle> triangles)
+        {
+            foreach (var currentEdge in edges)
+            {
+                var mid = currentEdge.MidPoint;
+                var edgeToMid = new Edge(currentPoint, mid);
+
+                var canSee = edges
+                    .Where(e => !e.Equals(currentEdge))
+                    .All(e => !Geom.Intersecting(edgeToMid, e));
+
+                if (!canSee) continue;
+
+                var edge1 = new Edge(currentEdge.p1, new Vertex(currentPoint));
+                var edge2 = new Edge(currentEdge.p2, new Vertex(currentPoint));
+
+                newEdges.Add(edge1);
+                newEdges.Add(edge2);
+
+                var tri = new Triangle(edge1.p1, edge1.p2, edge2.p1);
+                triangles.Add(tri);
+            }
         }
 
         private static bool AlmostTheSame(float a, float b)
