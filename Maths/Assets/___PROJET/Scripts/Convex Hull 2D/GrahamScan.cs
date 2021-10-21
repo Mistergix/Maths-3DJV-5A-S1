@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using ESGI.Common;
+using PGSauce.Core.PGDebugging;
 using PGSauce.Core.Utilities;
 using Shapes;
 using Sirenix.OdinInspector;
@@ -13,11 +14,16 @@ namespace ESGI.ConvexHull2D
     {
         public List<Vector2> positions;
         public DisplayData displayData;
-        private static Vector2 _barycentre;
-        
+        private List<Vector2> _hull;
+
+        private void Start()
+        {
+            _hull = new List<Vector2>();
+        }
+
         private void Update()
         {
-            ComputeGrahamScan(positions);
+            _hull = ComputeGrahamScan(positions);
         }
 
         public override void DrawShapes(Camera cam)
@@ -29,19 +35,117 @@ namespace ESGI.ConvexHull2D
                 {
                     Draw.Disc(point, displayData.pointSize, displayData.pointColor);
                 }
-                
-                Draw.Disc(_barycentre, displayData.pointSize, displayData.barycentreColor);
+
+                for (var i = 0; i < _hull.Count; i++)
+                {
+                    Draw.UseDashes = true;
+                    Draw.DashStyle = DashStyle.defaultDashStyle;
+                    Draw.Line(_hull[i], i == _hull.Count - 1 ? _hull[0] : _hull[i + 1]);
+                }
             }
         }
 
-        public static void ComputeGrahamScan(List<Vector2> vectors)
+        public static List<Vector2> ComputeGrahamScan(List<Vector2> vectors)
         {
-            var points = new List<Vector2>(vectors);
+            if (vectors.Count < 2)
+            {
+                return vectors.ToList();
+            }
 
-            _barycentre = GetBaryCentre(points);
+            var indexPivot = GetPivotPoint(vectors);
+            
+            var sort = SortPointsByAngle(vectors, indexPivot);
+
+            var points = new List<Vector2>();
+            points.Add(vectors[indexPivot]);
+            points.AddRange(sort);
+
+            var pile = new List<Vector2>();
+            pile.Insert(0, points[0]);
+            pile.Insert(0, points[1]);
+
+            for (var i = 2; i < points.Count; i++)
+            {
+                while ((EnoughPointsInPile(pile) && IsPointToTheRightOfSegment(points, i, pile)))
+                {
+                    pile.RemoveAt(0);
+                }
+                pile.Insert(0, points[i]);
+            }
+
+            pile.Reverse();
+            
+            return pile;
         }
 
-        private static Vector2 GetBaryCentre(List<Vector2> points)
+        private static bool IsPointToTheRightOfSegment(List<Vector2> points, int i, List<Vector2> pile)
+        {
+            return IsToTheRight(points[i], new OrientatedLine(pile[1], pile[0]));
+        }
+
+        private static bool EnoughPointsInPile(List<Vector2> pile)
+        {
+            return pile.Count >= 2;
+        }
+
+        private static bool IsToTheRight(Vector2 point, OrientatedLine orientatedLine)
+        {
+            var det = Determinant(orientatedLine, point);
+            if (det != 0.0f) {return det > 0;}
+            PGDebug.Message("The points are aligned, handle this case").LogTodo();
+            return true;
+        }
+
+        private static float Determinant(OrientatedLine orientatedLine, Vector2 point)
+        {
+            var A = point;
+            var B = orientatedLine.pointA;
+            var C = orientatedLine.pointB;
+            var AC = C - A;
+            var AB = B - A;
+            var det = AC.x * AB.y - AC.y * AB.x;
+            return det;
+        }
+        
+        private static int GetPivotPoint(IReadOnlyList<Vector2> vectors)
+        {
+            return Enumerable.Range(0, vectors.Count)
+                .Aggregate((indexMin, indexCurrent) =>
+                {
+                    if (vectors[indexCurrent].y < vectors[indexMin].y)
+                    {
+                        return indexCurrent;
+                    }
+
+                    if (vectors[indexCurrent].y > vectors[indexMin].y)
+                    {
+                        return indexMin;
+                    }
+
+                    if (vectors[indexCurrent].x < vectors[indexMin].x)
+                    {
+                        return indexCurrent;
+                    }
+
+                    return indexMin;
+                });
+        }
+
+        private static IEnumerable<Vector2> SortPointsByAngle(IReadOnlyList<Vector2> vectors, int indexPivot)
+        {
+            return Enumerable.Range(0, vectors.Count)
+                .Where(i => i != indexPivot) // skip pivot
+                .Select(i => new KeyValuePair<float, Vector2>(GetAngleToPoint(vectors, indexPivot, i), vectors[i]))
+                .OrderBy(pair => pair.Key)
+                .Select(pair => pair.Value);
+        }
+
+        private static float GetAngleToPoint(IReadOnlyList<Vector2> vectors, int indexPivot, int i)
+        {
+            return Mathf.Atan2(vectors[i].y - vectors[indexPivot].y, vectors[i].x - vectors[indexPivot].x);
+        }
+
+        private static Vector2 GetBaryCentre(IReadOnlyCollection<Vector2> points)
         {
             if (points.Count <= 0)
             {
@@ -57,10 +161,22 @@ namespace ESGI.ConvexHull2D
             positions.Clear();
             range.max.z = 0;
             range.min.z = 0;
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 positions.Add(PGUtils.RandomVector3(range));
             }
+        }
+    }
+
+    public class OrientatedLine
+    {
+        public readonly Vector2 pointA;
+        public readonly Vector2 pointB;
+
+        public OrientatedLine(Vector2 pointA, Vector2 pointB)
+        {
+            this.pointA = pointA;
+            this.pointB = pointB;
         }
     }
 }
