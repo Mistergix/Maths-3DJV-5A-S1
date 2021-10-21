@@ -47,7 +47,7 @@ namespace ESGI.ConvexHull2D
 
         public static List<Vector2> ComputeGrahamScan(List<Vector2> vectors)
         {
-            if (vectors.Count < 2)
+            if (vectors.Count <= 2)
             {
                 return vectors.ToList();
             }
@@ -92,8 +92,12 @@ namespace ESGI.ConvexHull2D
         {
             var det = Determinant(orientatedLine, point);
             if (det != 0.0f) {return det > 0;}
-            PGDebug.Message("The points are aligned, handle this case").LogTodo();
-            return true;
+            return HandleAlignedPoints(point, orientatedLine);
+        }
+
+        private static bool HandleAlignedPoints(Vector2 point, OrientatedLine orientatedLine)
+        {
+            return false;
         }
 
         private static float Determinant(OrientatedLine orientatedLine, Vector2 point)
