@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 565439536}
   - component: {fileID: 565439537}
   m_Layer: 0
-  m_Name: Graham Scan
+  m_Name: Jarvis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -163,31 +163,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 565439535}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6236fd9374f23d146962fe510a3f51f7, type: 3}
+  m_Script: {fileID: 11500000, guid: de23cbb8e1a24ca49be425e7059a4ba9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   useCullingMasks: 0
   positions:
-  - {x: -4.5474825, y: 9.017757}
-  - {x: 3.75051, y: -3.6217413}
-  - {x: 0.49316025, y: -2.5335398}
-  - {x: -3.7598505, y: 0.9952698}
-  - {x: -2.1879635, y: 0.8089056}
-  - {x: 6.050234, y: 0.6837902}
-  - {x: 5.537283, y: -8.134346}
-  - {x: 3.742685, y: 8.465403}
-  - {x: 4.412172, y: -7.1581917}
-  - {x: 5.50375, y: 0.24816132}
-  - {x: -7.700829, y: -0.073646545}
-  - {x: -1.592804, y: 7.961294}
-  - {x: 1.1771688, y: 9.662506}
-  - {x: 3.7084243, y: 4.818823}
-  - {x: 7.6872296, y: -2.4808254}
-  - {x: 2.5932643, y: 1.5329256}
-  - {x: -4.5592394, y: -4.1902294}
-  - {x: 1.267458, y: 8.793686}
-  - {x: -5.504837, y: 5.96318}
-  - {x: 9.413359, y: -6.7397594}
+  - {x: 0, y: 0}
+  - {x: 3, y: 0}
+  - {x: 6, y: 0}
+  - {x: 6, y: 3}
   displayData: {fileID: 11400000, guid: c7e02d7f24e18ad4fac3176edfbde442, type: 2}
 --- !u!1 &572495172
 GameObject:
