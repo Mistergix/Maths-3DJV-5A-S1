@@ -10,7 +10,8 @@ namespace ESGI.ConvexHull2D
 {
     public abstract class ConvexHull2D : ImmediateModeShapeDrawer
     {
-        [SerializeField] private List<Vector2> positions;
+        [SerializeField] private Points points;
+        private List<Vector2> positions => points.positions;
         [SerializeField] private DisplayData displayData;
         
         private List<Vector2> _hull;
@@ -22,7 +23,6 @@ namespace ESGI.ConvexHull2D
 
         private void Update()
         {
-            
             _hull = ComputeHull(positions);
         }
 
@@ -92,18 +92,6 @@ namespace ESGI.ConvexHull2D
             var AB = B - A;
             var det = AC.x * AB.y - AC.y * AB.x;
             return det;
-        }
-        
-        [Button]
-        private void GenerateRandomPoints(MinMax<Vector3> range, int count = 20)
-        {
-            positions.Clear();
-            range.max.z = 0;
-            range.min.z = 0;
-            for (var i = 0; i < count; i++)
-            {
-                positions.Add(PGUtils.RandomVector3(range));
-            }
         }
     }
 }

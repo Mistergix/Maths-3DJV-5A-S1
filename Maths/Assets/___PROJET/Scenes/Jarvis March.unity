@@ -167,11 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useCullingMasks: 0
-  positions:
-  - {x: 0, y: 0}
-  - {x: 3, y: 0}
-  - {x: 6, y: 0}
-  - {x: 6, y: 3}
+  points: {fileID: 11400000, guid: 5ed79c24a5d6ae14690795e0419199ad, type: 2}
   displayData: {fileID: 11400000, guid: c7e02d7f24e18ad4fac3176edfbde442, type: 2}
 --- !u!1 &572495172
 GameObject:
