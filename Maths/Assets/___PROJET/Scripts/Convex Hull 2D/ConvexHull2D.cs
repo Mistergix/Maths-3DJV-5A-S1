@@ -73,25 +73,9 @@ namespace ESGI.ConvexHull2D
         
         protected static bool IsToTheRight(Vector2 point, OrientatedLine orientatedLine)
         {
-            var det = Determinant(orientatedLine, point);
-            if (det != 0.0f) {return det > 0;}
-            return HandleAlignedPoints(point, orientatedLine);
+            return Geom.IsToTheRight(point, orientatedLine);
         }
         
-        private static bool HandleAlignedPoints(Vector2 point, OrientatedLine orientatedLine)
-        {
-            return false;
-        }
-
-        private static float Determinant(OrientatedLine orientatedLine, Vector2 point)
-        {
-            var A = point;
-            var B = orientatedLine.pointA;
-            var C = orientatedLine.pointB;
-            var AC = C - A;
-            var AB = B - A;
-            var det = AC.x * AB.y - AC.y * AB.x;
-            return det;
-        }
+        
     }
 }

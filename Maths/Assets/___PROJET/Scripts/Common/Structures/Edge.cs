@@ -21,6 +21,8 @@ namespace ESGI.Structures
             p2 = new Vertex(v2);
         }
 
+        public Vector2 MidPoint => (p1.position + p2.position) / 2;
+
         public void FlipEdge()
         {
             var tmp = p1;

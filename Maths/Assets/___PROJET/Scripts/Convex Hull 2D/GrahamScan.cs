@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using ESGI.Common;
 
 namespace ESGI.ConvexHull2D
 {
@@ -70,16 +71,5 @@ namespace ESGI.ConvexHull2D
             return ComputeGrahamScan(vectors);
         }
     }
-
-    public class OrientatedLine
-    {
-        public readonly Vector2 pointA;
-        public readonly Vector2 pointB;
-
-        public OrientatedLine(Vector2 pointA, Vector2 pointB)
-        {
-            this.pointA = pointA;
-            this.pointB = pointB;
-        }
-    }
+    
 }
