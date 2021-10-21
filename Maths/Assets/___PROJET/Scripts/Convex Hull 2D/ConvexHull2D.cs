@@ -8,12 +8,8 @@ using UnityEngine;
 
 namespace ESGI.ConvexHull2D
 {
-    public abstract class ConvexHull2D : ImmediateModeShapeDrawer
+    public abstract class ConvexHull2D : Drawer2D
     {
-        [SerializeField] private Points points;
-        private List<Vector2> positions => points.positions;
-        [SerializeField] private DisplayData displayData;
-        
         private List<Vector2> _hull;
 
         private void Start()
@@ -21,9 +17,9 @@ namespace ESGI.ConvexHull2D
             _hull = new List<Vector2>();
         }
 
-        private void Update()
+        protected override void CustomUpdate()
         {
-            _hull = ComputeHull(positions);
+            _hull = ComputeHull(Positions);
         }
 
         protected abstract List<Vector2> ComputeHull(List<Vector2> vectors);
@@ -33,9 +29,9 @@ namespace ESGI.ConvexHull2D
             base.DrawShapes(cam);
             using (Draw.Command(cam))
             {
-                foreach (var point in positions)
+                foreach (var point in Positions)
                 {
-                    Draw.Disc(point, displayData.pointSize, displayData.pointColor);
+                    Draw.Disc(point, Data.pointSize, Data.pointColor);
                 }
 
                 for (var i = 0; i < _hull.Count; i++)

@@ -8,12 +8,8 @@ using Triangle = ESGI.Structures.Triangle;
 
 namespace ESGI.Triangulation
 {
-    public abstract class TriangulationBase : ImmediateModeShapeDrawer
+    public abstract class TriangulationBase : Drawer2D
     {
-        [SerializeField] private Points points;
-        [SerializeField] private DisplayData displayData;
-        private List<Vector2> positions => points.positions;
-
         private List<Triangle> _triangulation;
 
         private void Start()
@@ -21,9 +17,9 @@ namespace ESGI.Triangulation
             _triangulation = new List<Triangle>();
         }
 
-        private void Update()
+        protected override void CustomUpdate()
         {
-            _triangulation = Triangulate(positions.ToVertices());
+            _triangulation = Triangulate(Positions.ToVertices());
         }
 
         public override void DrawShapes(Camera cam)
@@ -31,21 +27,23 @@ namespace ESGI.Triangulation
             base.DrawShapes(cam);
             using (Draw.Command(cam))
             {
-                foreach (var point in positions)
+                foreach (var point in Positions)
                 {
-                    Draw.Disc(point, displayData.pointSize, displayData.pointColor);
+                    Draw.Disc(point, Data.pointSize, Data.pointColor);
                 }
 
                 foreach (var triangle in _triangulation)
                 {
                     Draw.UseDashes = true;
                     Draw.DashStyle = DashStyle.defaultDashStyle;
-                    Draw.Line(triangle.p1.position, triangle.p2.position);
-                    Draw.Line(triangle.p2.position, triangle.p3.position);
-                    Draw.Line(triangle.p3.position, triangle.p1.position);
+                    Draw.Line(triangle.p1.position, triangle.p2.position, LineColor);
+                    Draw.Line(triangle.p2.position, triangle.p3.position, LineColor);
+                    Draw.Line(triangle.p3.position, triangle.p1.position, LineColor);
                 }
             }
         }
+
+        public abstract Color LineColor { get; }
 
         protected abstract List<Triangle> Triangulate(List<Vertex> vectors);
     }

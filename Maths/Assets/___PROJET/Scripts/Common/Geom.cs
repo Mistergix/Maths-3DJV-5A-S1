@@ -8,9 +8,84 @@ namespace ESGI.Common
 {
     public static class Geom
     {
-        public static void Flip(HalfEdge edge)
+        public static void Flip(this HalfEdge one)
         {
-            PGDebug.Message("Flip pas implémenté").LogWarning();
+            //PGDebug.Message("Refactoriser le flip").LogWarning();
+            //The data we need
+            //This edge's triangle
+            var two = one.nextEdge;
+            var three = one.previousEdge;
+            //The opposite edge's triangle
+            var four = one.twinEdge;
+            var five = one.twinEdge.nextEdge;
+            var six = one.twinEdge.previousEdge;
+            //The vertices
+            var a = one.targetVertex;
+            var b = one.nextEdge.targetVertex;
+            var c = one.previousEdge.targetVertex;
+            var d = one.twinEdge.nextEdge.targetVertex;
+
+
+
+            //Flip
+
+            //Change vertex
+            a.halfEdge = one.nextEdge;
+            c.halfEdge = one.twinEdge.nextEdge;
+
+            //Change half-edge
+            //Half-edge - half-edge connections
+            one.nextEdge = three;
+            one.previousEdge = five;
+
+            two.nextEdge = four;
+            two.previousEdge = six;
+
+            three.nextEdge = five;
+            three.previousEdge = one;
+
+            four.nextEdge = six;
+            four.previousEdge = two;
+
+            five.nextEdge = one;
+            five.previousEdge = three;
+
+            six.nextEdge = two;
+            six.previousEdge = four;
+
+            //Half-edge - vertex connection
+            one.targetVertex = b;
+            two.targetVertex = b;
+            three.targetVertex = c;
+            four.targetVertex = d;
+            five.targetVertex = d;
+            six.targetVertex = a;
+
+            //Half-edge - triangle connection
+            var t1 = one.triangle;
+            var t2 = four.triangle;
+
+            one.triangle = t1;
+            three.triangle = t1;
+            five.triangle = t1;
+
+            two.triangle = t2;
+            four.triangle = t2;
+            six.triangle= t2;
+
+            //Opposite-edges are not changing!
+
+            //Triangle connection
+            t1.p1 = b;
+            t1.p2 = c;
+            t1.p3 = d;
+
+            t2.p1 = b;
+            t2.p2 = d;
+            t2.p3 = a;
+
+            t1.halfEdge = three;
+            t2.halfEdge = four;
         }
 
         public static void AddTriangle(this List<Edge> edges, Triangle triangle)
@@ -27,7 +102,7 @@ namespace ESGI.Common
         
         public static bool IsQuadConvex(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
         {
-            PGDebug.Message($"What happens here if 3 of the points are colinear ? Or the quad is hourglass shaped ?").LogTodo();
+            //PGDebug.Message($"What happens here if 3 of the points are colinear ? Or the quad is hourglass shaped ?").LogTodo();
             var abc = new Triangle(a, b, c).IsClockwise();
             var abd = new Triangle(a, b, d).IsClockwise();
             var bcd = new Triangle(b, c, d).IsClockwise();
@@ -85,7 +160,17 @@ namespace ESGI.Common
 
             var det = (a * e * i) + (b * f * g) + (c * d * h) - (g * e * c) - (h * f * a) - (i * d * b);
 
-            return det;
+            if (det < 0)
+            {
+                return -1;
+            }
+
+            if (det > 0)
+            {
+                return 1;
+            }
+
+            return 0;
         }
 
         private static void ComputeTwinEdges(List<HalfEdge> edges)
@@ -100,10 +185,14 @@ namespace ESGI.Common
                 var from = he.FromVertex;
                 var to = he.targetVertex;
 
-                var oppositeEdge = edges.First(edge => @from.position == edge.targetVertex.position &&
+                var oppositeEdge = edges.FirstOrDefault(edge => from.position == edge.targetVertex.position &&
                                                        to.position == edge.FromVertex.position);
-                he.twinEdge = oppositeEdge;
-                oppositeEdge.twinEdge = he;
+
+                if (oppositeEdge != null)
+                {
+                    he.twinEdge = oppositeEdge;
+                    oppositeEdge.twinEdge = he;
+                }
             }
         }
 
@@ -198,6 +287,7 @@ namespace ESGI.Common
 
         private static bool AreLinesIntersecting(Vector2 l1P1, Vector2 l1P2, Vector2 l2P1, Vector2 l2P2, bool shouldIncludeEndPoints)
         {
+            //PGDebug.Message("Refactor a bit").LogTodo();
             //http://thirdpartyninjas.com/blog/2008/10/07/line-segment-intersection/
             var isIntersecting = false;
 
@@ -230,6 +320,121 @@ namespace ESGI.Common
             }
 
             return isIntersecting;
+        }
+
+        public static List<Triangle> IncrementalTriangulate2D(List<Vertex> sites)
+        {
+            var triangles = new List<Triangle>();
+
+            if (sites.Count < 3)
+            {
+                return triangles;
+            }
+
+            var points = sites.ToList();
+                
+            SortPointsByXThenY(points);
+
+            var x = points[0].position.x;
+            var index = 0;
+            while (index < points.Count && AlmostTheSame(x, points[index].position.x))
+            {
+                index++;
+            }
+
+            if (index == 1)
+            {
+                index++;
+            }
+
+            if (index > points.Count - 1)
+            {
+                PGDebug.Message("Most of the points are aligned vertically").LogWarning();
+                return triangles;
+            }
+
+            var triangle = new Triangle(points[0], points[index-1], points[index]);
+            
+            triangles.Add(triangle);
+
+            var edges = new List<Edge>();
+            
+            edges.AddTriangle(triangle);
+
+            for (var i = index + 1; i < points.Count; i++)
+            {
+                var currentPoint = points[i].position;
+                var newEdges = new List<Edge>();
+
+                CheckForVisibleEdges(edges, currentPoint, newEdges, triangles);
+
+                edges.AddRange(newEdges);
+            }
+            
+            return triangles;
+        }
+        
+        private static void CheckForVisibleEdges(IReadOnlyCollection<Edge> edges, Vector2 currentPoint, ICollection<Edge> newEdges, ICollection<Triangle> triangles)
+        {
+            foreach (var currentEdge in edges)
+            {
+                var mid = currentEdge.MidPoint;
+                var edgeToMid = new Edge(currentPoint, mid);
+
+                var canSee = edges
+                    .Where(e => !e.Equals(currentEdge))
+                    .All(e => !Geom.Intersecting(edgeToMid, e));
+
+                if (!canSee) continue;
+
+                var edge1 = new Edge(currentEdge.p1, new Vertex(currentPoint));
+                var edge2 = new Edge(currentEdge.p2, new Vertex(currentPoint));
+
+                newEdges.Add(edge1);
+                newEdges.Add(edge2);
+
+                var tri = new Triangle(edge1.p1, edge1.p2, edge2.p1);
+                triangles.Add(tri);
+            }
+        }
+
+        private static bool AlmostTheSame(float a, float b)
+        {
+            return Mathf.Approximately(a, b);
+        }
+
+        private static void SortPointsByXThenY(List<Vertex> sites)
+        {
+            sites.Sort((v1, v2) =>
+            {
+                var x1 = v1.position.x;
+                var x2 = v2.position.x;
+
+                if (x1 < x2)
+                {
+                    return -1;
+                }
+
+                if (x1 > x2)
+                {
+                    return 1;
+                }
+
+                var y1 = v1.position.y;
+                var y2 = v2.position.y;
+
+                if (y1 < y2)
+                {
+                    return -1;
+                }
+
+                if (y1 > y2)
+                {
+                    return 1;
+                }
+
+                return 0;
+            });
         }
     }
     
