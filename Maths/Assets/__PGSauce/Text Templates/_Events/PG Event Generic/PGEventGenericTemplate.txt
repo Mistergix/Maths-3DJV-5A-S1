@@ -1,0 +1,26 @@
+using System;
+using UnityEngine;
+using PGSauce.Core.PGEvents;
+
+namespace PGSauce.#SUBNAMESPACE#
+{
+	public class PGEvent#NUMBERARG#Args<#GENERICTYPES#> : ScriptableObject
+	{
+		private event Action<#GENERICTYPES#> action;
+
+		public void Raise(#GENERICARGUMENTS#)
+		{
+			action?.Invoke(#GENERICVALUES#);
+		}
+
+		public void Register(Action<#GENERICTYPES#> callback)
+		{
+			action += callback;
+		}
+
+		public void Unregister(Action<#GENERICTYPES#> callback)
+		{
+			action -= callback;
+		}
+	}
+}

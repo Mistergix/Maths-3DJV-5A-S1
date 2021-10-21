@@ -1,0 +1,10 @@
+using UnityEngine;
+using PGSauce.Core.PGFiniteStateMachine;
+
+namespace PGSauce.#SUBNAMESPACE#
+{
+	[CreateAssetMenu(menuName = "PG/Finite State Machine/States/#NAME# State")]
+	public class State#NAME# : State<#STATECONTROLLERNAME#>
+	{
+	}
+}

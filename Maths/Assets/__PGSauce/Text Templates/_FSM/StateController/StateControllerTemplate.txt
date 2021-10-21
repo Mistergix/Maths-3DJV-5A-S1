@@ -1,0 +1,11 @@
+using UnityEngine;
+using PGSauce.Core.PGFiniteStateMachine;
+
+namespace PGSauce.#SUBNAMESPACE#
+{
+	public class #STATECONTROLLERNAME# : StateController<#STATECONTROLLERNAME#>
+	{
+	}
+}
+
+

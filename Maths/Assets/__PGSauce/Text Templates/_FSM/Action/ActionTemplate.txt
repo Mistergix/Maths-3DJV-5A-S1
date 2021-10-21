@@ -1,0 +1,14 @@
+using UnityEngine;
+using PGSauce.Core.PGFiniteStateMachine.ScriptableObjects;
+
+namespace PGSauce.#SUBNAMESPACE#
+{
+	[CreateAssetMenu(menuName = "PG/Finite State Machine/Actions/#NAME#/#ACTIONNAME#")]
+	public class #ACTIONNAME#Action#NAME# : SOAction<#STATECONTROLLERNAME#>
+	{
+		public override void Act(#STATECONTROLLERNAME# controller)
+		{
+
+		}
+	}
+}

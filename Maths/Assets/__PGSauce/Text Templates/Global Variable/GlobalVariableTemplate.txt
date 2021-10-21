@@ -1,0 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using PGSauce.Core;
+
+namespace PGSauce.#SUBNAMESPACE#
+{
+    [CreateAssetMenu(fileName = "new Global #FORMATTEDTYPE#", menuName = "PG/Global Variables/Global #FORMATTEDTYPE#")]
+    public class Global#FORMATTEDTYPE# : IGlobalValue<#TYPE#>
+    {
+    }
+}

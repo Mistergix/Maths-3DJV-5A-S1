@@ -1,0 +1,14 @@
+using UnityEngine;
+using PGSauce.Core.PGFiniteStateMachine.ScriptableObjects;
+
+namespace PGSauce.#SUBNAMESPACE#
+{
+	[CreateAssetMenu(menuName = "PG/Finite State Machine/Decisions/#NAME#/#DECISIONNAME#")]
+	public class #DECISIONNAME#Decision#NAME# : SODecision<#STATECONTROLLERNAME#>
+	{
+		public override bool Decide(#STATECONTROLLERNAME# controller)
+		{
+			return #DEFAULTVALUE#;
+		}
+	}
+}

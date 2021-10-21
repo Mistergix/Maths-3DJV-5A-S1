@@ -1,0 +1,10 @@
+using UnityEngine;
+using PGSauce.Core.PGEvents;
+
+namespace PGSauce.#SUBNAMESPACE#
+{
+	[CreateAssetMenu(fileName = "Game Event #FORMATTEDSPACEDTYPES#", menuName = "PG/Game Events/#NUMBERARG# args/#FORMATTEDSPACEDTYPES#")]
+	public class PGEvent#FORMATTEDTYPES# : PGEvent#NUMBERARG#Args<#TYPES#>
+	{
+	}
+}
