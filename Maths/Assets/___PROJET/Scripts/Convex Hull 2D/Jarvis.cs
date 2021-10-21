@@ -9,7 +9,7 @@ namespace ESGI.ConvexHull2D
     {
         protected override List<Vector2> ComputeHull(List<Vector2> vectors)
         {
-            if (vectors.Count <= 2)
+            if (vectors.Count <= 3)
             {
                 return vectors.ToList();
             }

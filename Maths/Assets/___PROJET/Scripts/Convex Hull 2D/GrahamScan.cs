@@ -8,7 +8,7 @@ namespace ESGI.ConvexHull2D
     {
         public static List<Vector2> ComputeGrahamScan(List<Vector2> vectors)
         {
-            if (vectors.Count <= 2)
+            if (vectors.Count <= 3)
             {
                 return vectors.ToList();
             }

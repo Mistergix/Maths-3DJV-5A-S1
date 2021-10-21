@@ -1,3 +1,4 @@
+using ESGI.Structures;
 using UnityEngine;
 
 namespace PGSauce.Core.Utilities
