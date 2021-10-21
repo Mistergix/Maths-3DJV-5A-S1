@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -228747253, guid: a4865f1ab4504ed8a368670db22f409c, type: 3}
-  m_Name: OdinModuleConfig
+  m_Script: {fileID: 11500000, guid: 1717087378d74e6f84f3845d44e5cf6b, type: 3}
+  m_Name: Display Data
   m_EditorClassIdentifier: 
-  configurations:
-  - ID: Unity.Mathematics
-    ActivationSettings: 0
-  ModuleTogglingSettings: 2
-  ModuleUpdateSettings: 0
+  pointColor: {r: 1, g: 1, b: 1, a: 1}
+  barycentreColor: {r: 0.2509804, g: 1, b: 0.53333336, a: 1}
+  pointSize: 0.3
