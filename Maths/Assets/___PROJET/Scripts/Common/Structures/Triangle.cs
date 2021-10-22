@@ -39,5 +39,12 @@ namespace ESGI.Structures
             p1 = p2;
             p2 = tmp;
         }
+
+        public void SetLocal(Transform transform)
+        {
+            p1.position = transform.GetWorldPosition(p1.position);
+            p2.position = transform.GetWorldPosition(p2.position);
+            p3.position = transform.GetWorldPosition(p3.position);
+        }
     }
 }

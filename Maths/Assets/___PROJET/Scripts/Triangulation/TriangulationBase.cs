@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using ESGI.Common;
 using ESGI.Structures;
+using PGSauce.Core.Utilities;
 using Shapes;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using Triangle = ESGI.Structures.Triangle;
 
@@ -15,11 +17,13 @@ namespace ESGI.Triangulation
         private void Start()
         {
             _triangulation = new List<Triangle>();
+            
         }
 
         protected override void CustomUpdate()
         {
             _triangulation = Triangulate(Positions.ToVertices());
+            
         }
 
         public override void DrawShapes(Camera cam)
@@ -32,7 +36,7 @@ namespace ESGI.Triangulation
                     Draw.Disc(point, Data.pointSize, Data.pointColor);
                 }
 
-                foreach (var triangle in _triangulation)
+                foreach (var triangle in Triangulation)
                 {
                     Draw.UseDashes = true;
                     Draw.DashStyle = DashStyle.defaultDashStyle;
@@ -44,6 +48,8 @@ namespace ESGI.Triangulation
         }
 
         public abstract Color LineColor { get; }
+
+        public List<Triangle> Triangulation => _triangulation;
 
         protected abstract List<Triangle> Triangulate(List<Vertex> vectors);
     }

@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Display Data
   m_EditorClassIdentifier: 
   pointColor: {r: 1, g: 1, b: 1, a: 1}
-  barycentreColor: {r: 0.2509804, g: 1, b: 0.53333336, a: 1}
   pointSize: 0.3
+  arrowSize: 0.18
+  arrowStretchFactor: 3.71
+  arrowOffset: 0.14

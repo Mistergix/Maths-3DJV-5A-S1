@@ -126,7 +126,7 @@ namespace ESGI.Common
         {
             triangles.OrientClockWise();
 
-            var edges =InitEdges(triangles);
+            var edges = InitEdges(triangles);
 
             ComputeTwinEdges(edges);
 

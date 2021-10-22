@@ -360,7 +360,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1734443463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,7 +376,9 @@ MonoBehaviour:
   useCullingMasks: 0
   points: {fileID: 11400000, guid: cba6968cc308c8945b2de31277a34a62, type: 2}
   displayData: {fileID: 11400000, guid: c7e02d7f24e18ad4fac3176edfbde442, type: 2}
-  maxIteration: 100
+  maxIteration: 1
+  drawEdges: 0
+  drawCircles: 0
 --- !u!4 &1734443464
 Transform:
   m_ObjectHideFlags: 0

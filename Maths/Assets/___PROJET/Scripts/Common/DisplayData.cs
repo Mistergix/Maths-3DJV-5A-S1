@@ -7,7 +7,9 @@ namespace ESGI.Common
     public class DisplayData : ScriptableObject
     {
         public Color pointColor = Color.white;
-        public Color barycentreColor = PGColors.Greenish;
         public float pointSize = 0.5f;
+        public float arrowSize = 0.2f;
+        public float arrowStretchFactor = 1;
+        public float arrowOffset = 0.2f;
     }
 }
