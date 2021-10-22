@@ -35,8 +35,7 @@ namespace ESGI.Triangulation
                     {
                         continue;
                     }
-
-                    //PGDebug.Message("Refactor a bit").LogTodo();
+                    
                     var a = thisEdge.targetVertex;
                     var b = thisEdge.nextEdge.targetVertex;
                     var c = thisEdge.previousEdge.targetVertex;
