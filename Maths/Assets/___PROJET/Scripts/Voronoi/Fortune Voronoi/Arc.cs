@@ -9,10 +9,24 @@ namespace ESGI.Voronoi.Fortune
     {
         public Vector2 site;
         public CircleEvent circleEvent;
+        public Parabola parabola;
+
+        public Arc (Vector2 site){
+            this.site = site;
+            parabola = new Parabola();
+        }
 
         public void CleanQueue(PriorityQueue<Event> queue)
         {
             queue.Data.Remove(circleEvent);
+        }
+
+        public void UpdateDirectrix(float lineY){
+            parabola.ComputeParabolaFromFocusAndHorizontalLine(site, lineY);
+        }
+
+        public float Compute(float x){
+            return parabola.Compute(x);
         }
     }
 }

@@ -5,43 +5,49 @@ namespace ESGI.Common
 {
     public class Parabola
     {
-        private float _a;
-        private float _b;
-        private float _c;
+        private float focusX;
+        private float focusY;
+        private float lineY;
 
         public void ComputeParabolaFromFocusAndHorizontalLine(Vector2 focus, float lineY)
         {
             //https://www.varsitytutors.com/hotmath/hotmath_help/topics/finding-the-equation-of-a-parabola-given-focus-and-directrix
-            _a = focus.x;
-            _b = focus.y;
-            _c = lineY;
-            /*
-            var B = focus.y - lineY;
-            var A = focus.y * focus.y - lineY * lineY;
-
-            if (B == 0.0f)
-            {
-                _a = _b = _c = 0;
-                PGDebug.Message("Undefined Parabola").LogTodo();
-            }
-
-            _a = 1 / (2 * B);
-            _b = -focus.x / B;
-            _c = (1 + A) / (2 * B);*/
+            focusX = focus.x;
+            focusY = focus.y;
+            this.lineY = lineY;
         }
 
         public float Compute(float x)
         {
-            var A = (x - _a) * (x - _a);
-            var B = _b * _b - _c * _c;
-            var C = 2 * (_b - _c);
+            //https://www.varsitytutors.com/hotmath/hotmath_help/topics/finding-the-equation-of-a-parabola-given-focus-and-directrix
+            var A = (x - focusX) * (x - focusX);
+            var B = focusY * focusY - lineY * lineY;
+            var C = 2 * (focusY - lineY);
             if (C == 0.0f)
             {
                 PGDebug.Message("Undefined Parabola").LogTodo();
-                return 0f;
+                return 1000f;
             }
 
             return (A + B) / C;
+        }
+
+        public (float a, float b, float c) GetCoeffs(){
+            var A = (x - focusX) * (x - focusX);
+            var B = focusY * focusY - lineY * lineY;
+            var C = 2 * (focusY - lineY);
+            if (C == 0.0f)
+            {
+                PGDebug.Message("Undefined Parabola").LogTodo();
+                return (0,0,0);
+            }
+
+
+            var a = 1 / C;
+            var b = (- 2 * focusX) / C;
+            var c = (focusX * focusX + B) / C;
+
+            return (a,b,c);
         }
     }
 }

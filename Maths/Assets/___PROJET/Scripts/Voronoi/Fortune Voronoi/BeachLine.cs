@@ -11,13 +11,15 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
     public class BeachLine
     {
         private BinarySearchTree<VoronoiNodeData> _bst;
+        private VoronoiFortune _voronoi;
 
-        public BeachLine()
+        public BeachLine(VoronoiFortune voronoiFortune)
         {
             _bst = new BinarySearchTree<VoronoiNodeData>();
+            _voronoi = voronoiFortune;
         }
 
-        public VoronoiNodeData GetArcAboveSite(VoronoiFortune voronoiFortune, Vector2 site)
+        public VoronoiNodeData GetArcAboveSite(Vector2 site)
         {
             if (_bst.Root == null)
             {
@@ -139,6 +141,58 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
 
             PGDebug.Message("The site is directly under a breakpoint, what to do ?").LogTodo();
             return bstRoot.RightNode.Data;
+        }
+
+        private Vector2 ComputeBreakPoint(Arc leftArc, Arc rightArc)
+        {
+            // https://www.emathzone.com/tutorials/geometry/equation-of-a-circle-given-two-points-and-tangent-line.html
+            var lineY = _voronoi.lineY;
+            var siteA = leftArc.site;
+            var siteB = rightArc.site;
+
+            leftArc.UpdateDirectrix(lineY);
+            rightArc.UpdateDirectrix(lineY);
+
+            var (a1,b1,c1) = leftArc.parabola.GetCoeffs();
+            var (a2,b2,c2) = rightArc.parabola.GetCoeffs();
+
+            var a = a1 - a2;
+            var b = b1 - b2;
+            var c = c1 - c2;
+
+            if(a == 0.0f){
+                if(b == 0.0f){
+                    if(c==0.0f){
+                        PGDebug.Message("parabolas are the same, so the sites are the same, infinite intersections").LogError();
+                        return Vector2.zero;
+                    }
+
+                    PGDebug.Message("parabolas only differ vertically, should never happen, no intersections").LogError();
+                    return Vector2.zero;
+                }
+
+                var x = -c / b;
+
+                return leftArc.Compute(x);
+            }
+
+            var delta = b * b - 4 * a * c;
+
+            if(delta < 0) {
+                PGDebug.Message("one parabola is inside the other, should never happen, no intersections").LogError();
+                return Vector2.zero;
+            }
+
+            if(delta == 0.0f){
+                var x = -b / (2 * a);
+                return leftArc.Compute(x);
+            }
+
+            var sqrDelta = Mathf.Sqrt(delta);
+
+            var x1 = (-b - sqrDelta) / (2 * a);
+            var x2 = (-b + sqrDelta) / (2 * a);
+
         }
 
         public void AddRootNode(Vector2 site)

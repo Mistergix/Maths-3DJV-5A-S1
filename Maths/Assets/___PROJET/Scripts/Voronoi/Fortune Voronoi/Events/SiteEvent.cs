@@ -15,6 +15,7 @@ namespace ESGI.Common
         public override void HandleEvent(VoronoiFortune voronoiFortune)
         {
             voronoiFortune.InsertInBeachLine(_site);
+            voronoiFortune.lineY = _site.y;
         }
     }
 }
