@@ -10,6 +10,8 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
     {
         private Vector2 _site;
         private Arc _arc;
+
+        public VoronoiEdge Edge {get;set;}
         public VoronoiNodeData(Vector2 site)
         {
             _site = site;

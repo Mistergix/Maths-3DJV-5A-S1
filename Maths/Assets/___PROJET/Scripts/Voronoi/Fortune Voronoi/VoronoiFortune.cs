@@ -68,17 +68,38 @@ namespace ESGI.Voronoi.Fortune
 
             node.CleanQueue(_queue);
 
-            
+            var start = new Vector2(site.x, node.Arc.Compute(site.x, lineY));
+            var edgeLeft = new VoronoiEdge(start, node.Site, site);
+            var edgeRight = new VoronoiEdge(start, site, node.Site);
+
+            edgeLeft._neighbour = edgeRight;
+
+            _dcel.edges.Add(edgeLeft);
+
+            node.Edge = edgeRight;
+
+
 
             var leftNode = new VoronoiNode(node.Site);
             var middleNode = new VoronoiNode(site);
             var rightNode = new VoronoiNode(node.Site);
+
             var connectionNode = new VoronoiNode(Vector2.zero);
 
-            node.Node.Left = leftNode;
-            node.Node.Right = connectionNode;
-            connectionNode.LeftNode = middleNode;
-            connectionNode.RightNode = rightNode;
+            node.Node.RightNode = rightNode;
+            node.Node.LeftNode = connectionNode;
+            node.Node.LefNode.Data.Edge = edgeLeft;
+            
+            connectionNode.LeftNode = leftNode;
+            connectionNode.RightNode = middleNode;
+
+            CheckCircle(leftNode);
+            CheckCircle(rightNode);
+        }
+
+        private void CheckCircle(VoronoiNode node){
+            var leftParent = _beachLine.GetLeftParent(node);
+            var rightParent = _beachLine.GetRightParent(node);
         }
     }
 }

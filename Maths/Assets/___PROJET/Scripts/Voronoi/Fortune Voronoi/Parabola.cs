@@ -20,16 +20,8 @@ namespace ESGI.Common
         public float Compute(float x)
         {
             //https://www.varsitytutors.com/hotmath/hotmath_help/topics/finding-the-equation-of-a-parabola-given-focus-and-directrix
-            var A = (x - focusX) * (x - focusX);
-            var B = focusY * focusY - lineY * lineY;
-            var C = 2 * (focusY - lineY);
-            if (C == 0.0f)
-            {
-                PGDebug.Message("Undefined Parabola").LogTodo();
-                return 1000f;
-            }
-
-            return (A + B) / C;
+            var (a,b,c) = GetCoeffs();
+            return a*x*x + b * x + c;
         }
 
         public (float a, float b, float c) GetCoeffs(){

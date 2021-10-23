@@ -43,7 +43,7 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             return ComputeBreakPointX(left.Data.Arc, right.Data.Arc);
         }
 
-        private VoronoiNode GetLeftChild(VoronoiNode node){
+        public VoronoiNode GetLeftChild(VoronoiNode node){
             var left = node.LeftNode;
 
             // The arc to the left of the break point is the right most node in the left tree
@@ -54,7 +54,7 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             return left;
         }
 
-        private VoronoiNode GetRightChild(VoronoiNode node){
+        public VoronoiNode GetRightChild(VoronoiNode node){
             var right = bstRoot.RightNode;
 
             // The arc to the right of the break point is the left most node in the right tree
@@ -63,6 +63,32 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             }
 
             return right;
+        }
+
+        public VoronoiNode GetLeftParent(VoronoiNode node){
+            var parent = node.Parent;
+            var last = node;
+
+            while(parent.LeftNode.Equals(last)){
+                if(parent.Parent == null) {return null;}
+                last = parent;
+                parent = parent.parent;
+            }
+
+            return parent;
+        }
+
+        public VoronoiNode GetRightParent(VoronoiNode node){
+            var parent = node.Parent;
+            var last = node;
+
+            while(parent.RightNode.Equals(last)){
+                if(parent.Parent == null) {return null;}
+                last = parent;
+                parent = parent.parent;
+            }
+
+            return parent;
         }
 
         private float ComputeBreakPointX(Arc leftArc, Arc rightArc)

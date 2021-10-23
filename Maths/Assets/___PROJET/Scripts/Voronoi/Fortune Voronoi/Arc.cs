@@ -27,7 +27,8 @@ namespace ESGI.Voronoi.Fortune
             parabola.ComputeParabolaFromFocusAndHorizontalLine(site, lineY);
         }
 
-        public float Compute(float x){
+        public float Compute(float x, float lineY){
+            UpdateDirectrix(lineY);
             return parabola.Compute(x);
         }
     }

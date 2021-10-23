@@ -7,7 +7,7 @@ namespace ESGI.Common
         public override float Priority { get; }
         public override void HandleEvent(VoronoiFortune voronoiFortune)
         {
-            throw new System.NotImplementedException();
+            voronoiFortune.lineY = ;
         }
     }
 }
