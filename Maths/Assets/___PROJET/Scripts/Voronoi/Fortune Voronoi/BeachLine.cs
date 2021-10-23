@@ -42,18 +42,103 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
                 return null;
             }
 
-            if (bstRoot.RightNode.LeftNode == null)
-            {
-                PGDebug.Message("A child is missing in the children").LogError();
-                return null;
+            if(bstRoot.LeftNode.IsLeaf && bstRoot.RightNode.IsLeaf){
+                return BothLeaves(bstRoot, site);
             }
 
+            if(bstRoot.RighNode.IsLeaf){
+                PGDegub.Message("Should not happen, with the way we insert nodes in beach line").LogError();
+            }
+
+            if(bstRoot.LeftNode.IsLeaf)
+            {
+                return OneLeafOneNode(bstRoot, site);
+            }
+
+            return BothNodes(bstRoot, site);
+        }
+
+        private VoronoiNodeData BothNodes(Node<VoronoiNodeData> bstRoot, Vector2 site){
+            Arc leftArc;
+            Arc rightArc;
+
+            var left = bstRoot.LeftNode;
+            var right = bstRoot.RightNode;
+
+            // The arc to the left of the break point is the right most node in the left tree
+            while(left.RighNode != null){
+                left = left.RightNode;
+            }
+
+            leftArc = left.Data.Arc;
+
+            // The arc to the right of the break point is the left most node in the right tree
+            while(right.LeftNode != null){
+                right = right.LeftNode;
+            }
+
+            rightArc = right.Data.Arc;
+
+            Vector2 breakPoint = ComputeBreakPoint(leftArc, rightArc);
+
+            if(breakPoint.x > site.x){
+            // break point to the right, so we return left arc
+                return FindArc(site, bstRoot.LeftNode);
+            }
+
+            if(breakPoint.x < site.x){
+                return FindArc(site, bstRoot.RightNode);
+            }
+
+            PGDebug.Message("The site is directly under a breakpoint, what to do ?").LogTodo();
+            return bstRoot.LeftNode.Data;
+        }
+
+        private VoronoiNodeData OneLeafOneNode(Node<VoronoiNodeData> bstRoot, Vector2 site){
+            Arc leftArc = bstRoot.LeftNode.Data.Arc;
+            Arc rightArc;
+
+            var right = bstRoot.RightNode;
+
+            // The arc to the right of the break point is the left most node in the right tree
+            while(right.LeftNode != null){
+                right = right.LeftNode;
+            }
+
+            rightArc = right.Data.Arc;
+
+            Vector2 breakPoint = ComputeBreakPoint(leftArc, rightArc);
+
+            if(breakPoint.x > site.x){
+            // break point to the right, so we return left arc
+                return bstRoot.LeftNode.Data;
+            }
+
+            if(breakPoint.x < site.x){
+                return FindArc(site, bstRoot.RightNode);
+            }
+
+            PGDebug.Message("The site is directly under a breakpoint, what to do ?").LogTodo();
+            return bstRoot.LeftNode.Data;
+        }
+
+        private VoronoiNodeData BothLeaves(Node<VoronoiNodeData> bstRoot, Vector2 site){
             Arc leftArc = bstRoot.LeftNode.Data.Arc;
             Arc rightArc = bstRoot.RightNode.LeftNode.Data.Arc;
 
             Vector2 breakPoint = ComputeBreakPoint(leftArc, rightArc);
-            
-            
+
+            if(breakPoint.x > site.x){
+                // break point to the right, so we return left arc
+                return bstRoot.LeftNode.Data;
+            }
+
+            if(breakPoint.x < site.x){
+                return bstRoot.RightNode.Data;
+            }
+
+            PGDebug.Message("The site is directly under a breakpoint, what to do ?").LogTodo();
+            return bstRoot.RightNode.Data;
         }
 
         public void AddRootNode(Vector2 site)
