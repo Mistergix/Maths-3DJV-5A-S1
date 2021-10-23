@@ -23,153 +23,49 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
         {
             if (_bst.Root == null)
             {
-                return null;
+                _bst.Root = new VoronoiNode(site);
+                return _bst.Root;
             }
-            
-            return FindArc(site, _bst.Root);
+
+            var node = _bst.Root;
+            while(!node.IsLeaf){
+                var x = GetX(node, _voronoi.lineY);
+                node = x > site.x ? node.LeftNode : node.RightNode;
+            }
+
+            return node.Data;
         }
 
-        private VoronoiNodeData FindArc(Vector2 site, Node<VoronoiNodeData> bstRoot)
-        {
-            if (bstRoot.IsLeaf)
-            {
-                return bstRoot.Data;
-            }
-            
-            // Must have two children
+        private float GetX(VoronoiNode node, float lineY){
+            var left = GetLeftChild(node);
+            var right = GetRightChild(node);
 
-            if (bstRoot.Left == null || bstRoot.Right == null)
-            {
-                PGDebug.Message("A child is missing").LogError();
-                return null;
-            }
-
-            if(bstRoot.LeftNode.IsLeaf && bstRoot.RightNode.IsLeaf){
-                return BothLeaves(bstRoot, site);
-            }
-
-            if(bstRoot.RighNode.IsLeaf){
-                PGDegub.Message("Should not happen, with the way we insert nodes in beach line").LogError();
-            }
-
-            if(bstRoot.LeftNode.IsLeaf)
-            {
-                return OneLeafOneNode(bstRoot, site);
-            }
-
-            return BothNodes(bstRoot, site);
+            return ComputeBreakPointX(left.Data.Arc, right.Data.Arc);
         }
 
-        private VoronoiNodeData BothNodes(Node<VoronoiNodeData> bstRoot, Vector2 site){
-            Arc leftArc;
-            Arc rightArc;
-
-            var left = bstRoot.LeftNode;
-            var right = bstRoot.RightNode;
+        private VoronoiNode GetLeftChild(VoronoiNode node){
+            var left = node.LeftNode;
 
             // The arc to the left of the break point is the right most node in the left tree
-            while(left.RighNode != null){
+            while(left.IsLeaf){
                 left = left.RightNode;
             }
 
-            leftArc = left.Data.Arc;
-
-            // The arc to the right of the break point is the left most node in the right tree
-            while(right.LeftNode != null){
-                right = right.LeftNode;
-            }
-
-            rightArc = right.Data.Arc;
-
-            var breakPoints = ComputeBreakPoint(leftArc, rightArc);
-
-            if(breakPoints.Count <= 0){
-                PGDebug.Message("No breakpoints at all, why ?").LogError();
-                return bstRoot.Data;
-            }
-
-            // take the left most breakpoint
-
-            var breakPoint = breakPoints[0];
-            if(breakPoint.x > site.x){
-            // break point to the right, so we return left arc
-                return FindArc(site, bstRoot.LeftNode);
-            }
-
-            if(breakPoint.x < site.x){
-                return FindArc(site, bstRoot.RightNode);
-            }
-
-            PGDebug.Message("The site is directly under a breakpoint, what to do ?").LogTodo();
-            return bstRoot.LeftNode.Data;
+            return left;
         }
 
-        private VoronoiNodeData OneLeafOneNode(Node<VoronoiNodeData> bstRoot, Vector2 site){
-            Arc leftArc = bstRoot.LeftNode.Data.Arc;
-            Arc rightArc;
-
+        private VoronoiNode GetRightChild(VoronoiNode node){
             var right = bstRoot.RightNode;
 
             // The arc to the right of the break point is the left most node in the right tree
-            while(right.LeftNode != null){
+            while(right.IsLeaf){
                 right = right.LeftNode;
             }
 
-            rightArc = right.Data.Arc;
-
-            var breakPoint = ComputeBreakPoint(leftArc, rightArc);
-
-            if(breakPoints.Count <= 0){
-                PGDebug.Message("No breakpoints at all, why ?").LogError();
-                return bstRoot.Data;
-            }
-
-            // take the left most breakpoint
-
-            var breakPoint = breakPoints[0];
-
-            if(breakPoint.x > site.x){
-            // break point to the right, so we return left arc
-                return bstRoot.LeftNode.Data;
-            }
-
-            if(breakPoint.x < site.x){
-                return FindArc(site, bstRoot.RightNode);
-            }
-
-            PGDebug.Message("The site is directly under a breakpoint, what to do ?").LogTodo();
-            return bstRoot.LeftNode.Data;
+            return right;
         }
 
-        private VoronoiNodeData BothLeaves(Node<VoronoiNodeData> bstRoot, Vector2 site){
-            Arc leftArc = bstRoot.LeftNode.Data.Arc;
-            Arc rightArc = bstRoot.RightNode.LeftNode.Data.Arc;
-
-            var breakPoint = ComputeBreakPoint(leftArc, rightArc);
-
-            if(breakPoints.Count <= 0){
-                PGDebug.Message("No breakpoints at all, why ?").LogError();
-                return bstRoot.Data;
-            }
-
-            // take the left most breakpoint
-
-            var breakPoint = breakPoints[0];
-
-            if(breakPoint.x > site.x){
-                // break point to the right, so we return left arc
-                return bstRoot.LeftNode.Data;
-            }
-
-            if(breakPoint.x < site.x){
-                return bstRoot.RightNode.Data;
-            }
-
-            PGDebug.Message("The site is directly under a breakpoint, what to do ?").LogTodo();
-            return bstRoot.RightNode.Data;
-        }
-
-        private List<Vector2> ComputeBreakPoint(Arc leftArc, Arc rightArc)
+        private float ComputeBreakPointX(Arc leftArc, Arc rightArc)
         {
             var lineY = _voronoi.lineY;
             var siteA = leftArc.site;
@@ -189,16 +85,16 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
                 if(b == 0.0f){
                     if(c==0.0f){
                         PGDebug.Message("parabolas are the same, so the sites are the same, infinite intersections").LogError();
-                        return new List<Vector2>();
+                        return 0;
                     }
 
                     PGDebug.Message("parabolas only differ vertically, should never happen, no intersections").LogError();
-                    return new List<Vector2>();
+                    return 0;
                 }
 
                 var x = -c / b;
 
-                return new List<Vector2>() { leftArc.Compute(x) };
+                return x;
             }
 
             var delta = b * b - 4 * a * c;
@@ -210,19 +106,20 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
 
             if(delta == 0.0f){
                 var x = -b / (2 * a);
-                return new List<Vector2>() { leftArc.Compute(x) };
+                return x;
             }
 
             var sqrDelta = Mathf.Sqrt(delta);
 
             var x1 = (-b - sqrDelta) / (2 * a);
             var x2 = (-b + sqrDelta) / (2 * a);
-            return new List<Vector2>() { leftArc.Compute(x1), leftArc.Compute(x2)};
+
+            var ry = 0.0f;
+
+            if(siteA.y < siteB.y) {return x2;}
+            return x1;
         }
 
-        public void AddRootNode(Vector2 site)
-        {
-            _bst.Root = new VoronoiNode(site);
-        }
+        
     }
 }

@@ -33,10 +33,13 @@ namespace ESGI.Voronoi.Fortune
             _queue = new PriorityQueue<Event>();
             _dcel = new DCEL();
             _beachLine = new BeachLine();
-            foreach (var point in Positions)
+            var sites = CleanPoints(Positions);
+            foreach (var point in sites)
             {
                 var siteEvent = new SiteEvent(point);
                 Queue.Enqueue(siteEvent);
+
+                _dcel.AddNewCell(new VoronoiCell());
             }
 
             while (!Queue.Empty())
@@ -44,6 +47,14 @@ namespace ESGI.Voronoi.Fortune
                 var e = Queue.Dequeue();
                 e.HandleEvent(this);
             }
+
+            FinishEdge();
+            for(i=0; i<this.edges.length; i++)
+		        if(this.edges[i].neighbour) this.edges[i].start = this.edges[i].neighbour.end;
+        }
+
+        private List<Vector2> CleanSites(List<Vector2> points){
+
         }
         
         public void InsertInBeachLine(Vector2 site)
@@ -54,7 +65,11 @@ namespace ESGI.Voronoi.Fortune
                 _beachLine.AddRootNode(site);
                 return;
             }
+
             node.CleanQueue(_queue);
+
+            
+
             var leftNode = new VoronoiNode(node.Site);
             var middleNode = new VoronoiNode(site);
             var rightNode = new VoronoiNode(node.Site);

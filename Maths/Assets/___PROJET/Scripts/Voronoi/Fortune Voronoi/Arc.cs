@@ -18,7 +18,9 @@ namespace ESGI.Voronoi.Fortune
 
         public void CleanQueue(PriorityQueue<Event> queue)
         {
+            if(circleEvent == null) {return;}
             queue.Data.Remove(circleEvent);
+            circleEvent = null;
         }
 
         public void UpdateDirectrix(float lineY){

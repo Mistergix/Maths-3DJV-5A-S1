@@ -45,7 +45,8 @@ namespace ESGI.Common
 
             var a = 1 / C;
             var b = (- 2 * focusX) / C;
-            var c = (focusX * focusX + B) / C;
+            //var c = (focusX * focusX + B) / C;
+            var c = lineY + C / 4 + focusX * focusX / C; 
 
             return (a,b,c);
         }

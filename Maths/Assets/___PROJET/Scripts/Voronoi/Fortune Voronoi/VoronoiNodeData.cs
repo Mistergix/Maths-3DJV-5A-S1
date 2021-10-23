@@ -33,7 +33,7 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
 
         public void CleanQueue(PriorityQueue<Event> queue)
         {
-            PGDebug.Message("Clean Queue").LogTodo();
+           _arc.CleanQueue(queue);
         }
     }
 }
