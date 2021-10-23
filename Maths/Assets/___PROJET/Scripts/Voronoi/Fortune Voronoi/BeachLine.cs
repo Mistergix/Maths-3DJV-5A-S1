@@ -81,8 +81,16 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
 
             rightArc = right.Data.Arc;
 
-            Vector2 breakPoint = ComputeBreakPoint(leftArc, rightArc);
+            var breakPoints = ComputeBreakPoint(leftArc, rightArc);
 
+            if(breakPoints.Count <= 0){
+                PGDebug.Message("No breakpoints at all, why ?").LogError();
+                return bstRoot.Data;
+            }
+
+            // take the left most breakpoint
+
+            var breakPoint = breakPoints[0];
             if(breakPoint.x > site.x){
             // break point to the right, so we return left arc
                 return FindArc(site, bstRoot.LeftNode);
@@ -109,7 +117,16 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
 
             rightArc = right.Data.Arc;
 
-            Vector2 breakPoint = ComputeBreakPoint(leftArc, rightArc);
+            var breakPoint = ComputeBreakPoint(leftArc, rightArc);
+
+            if(breakPoints.Count <= 0){
+                PGDebug.Message("No breakpoints at all, why ?").LogError();
+                return bstRoot.Data;
+            }
+
+            // take the left most breakpoint
+
+            var breakPoint = breakPoints[0];
 
             if(breakPoint.x > site.x){
             // break point to the right, so we return left arc
@@ -128,7 +145,16 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             Arc leftArc = bstRoot.LeftNode.Data.Arc;
             Arc rightArc = bstRoot.RightNode.LeftNode.Data.Arc;
 
-            Vector2 breakPoint = ComputeBreakPoint(leftArc, rightArc);
+            var breakPoint = ComputeBreakPoint(leftArc, rightArc);
+
+            if(breakPoints.Count <= 0){
+                PGDebug.Message("No breakpoints at all, why ?").LogError();
+                return bstRoot.Data;
+            }
+
+            // take the left most breakpoint
+
+            var breakPoint = breakPoints[0];
 
             if(breakPoint.x > site.x){
                 // break point to the right, so we return left arc
@@ -143,9 +169,8 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             return bstRoot.RightNode.Data;
         }
 
-        private Vector2 ComputeBreakPoint(Arc leftArc, Arc rightArc)
+        private List<Vector2> ComputeBreakPoint(Arc leftArc, Arc rightArc)
         {
-            // https://www.emathzone.com/tutorials/geometry/equation-of-a-circle-given-two-points-and-tangent-line.html
             var lineY = _voronoi.lineY;
             var siteA = leftArc.site;
             var siteB = rightArc.site;
@@ -164,35 +189,35 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
                 if(b == 0.0f){
                     if(c==0.0f){
                         PGDebug.Message("parabolas are the same, so the sites are the same, infinite intersections").LogError();
-                        return Vector2.zero;
+                        return new List<Vector2>();
                     }
 
                     PGDebug.Message("parabolas only differ vertically, should never happen, no intersections").LogError();
-                    return Vector2.zero;
+                    return new List<Vector2>();
                 }
 
                 var x = -c / b;
 
-                return leftArc.Compute(x);
+                return new List<Vector2>() { leftArc.Compute(x) };
             }
 
             var delta = b * b - 4 * a * c;
 
             if(delta < 0) {
                 PGDebug.Message("one parabola is inside the other, should never happen, no intersections").LogError();
-                return Vector2.zero;
+                return new List<Vector2>();
             }
 
             if(delta == 0.0f){
                 var x = -b / (2 * a);
-                return leftArc.Compute(x);
+                return new List<Vector2>() { leftArc.Compute(x) };
             }
 
             var sqrDelta = Mathf.Sqrt(delta);
 
             var x1 = (-b - sqrDelta) / (2 * a);
             var x2 = (-b + sqrDelta) / (2 * a);
-
+            return new List<Vector2>() { leftArc.Compute(x1), leftArc.Compute(x2)};
         }
 
         public void AddRootNode(Vector2 site)
