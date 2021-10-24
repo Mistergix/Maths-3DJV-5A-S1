@@ -4,20 +4,20 @@ using UnityEngine;
 namespace ESGI.Voronoi.Fortune
 {
     public class VoronoiEdge{
-        private Vertex _start,_left, _right, _end;
+        private Vertex _start,_left, _right, _end,_secondPoint;
         private float _coeffDir, _originOrdonnee;
-        private Vector2 _direction, _secondPoint;
+        private Vector2 _direction;
         private VoronoiEdge _twin;
         private bool intersected, counted;
-        public VoronoiEdge(Vector2 start, Vector2 left, Vector2 right){
-            _start = new Vertex(start);
-            _left = new Vertex(left);
-            _right = new Vertex(right);
+        public VoronoiEdge(Vertex start, Vertex left, Vertex right){
+            _start = start;
+            _left = left;
+            _right = right;
 
-            _coeffDir = (right.x - left.x) / (right.y - left.y);
+            _coeffDir = (right.x - left.x) / (left.y - right.y);
             _originOrdonnee = start.y - CoeffDir * start.x;
             _direction = new Vector2(right.y - left.y, -(right.x - left.x));
-            _secondPoint = new Vector2(start.x + Direction.x, start.y + Direction.y);
+            _secondPoint = new Vertex(new Vector2(start.x + Direction.x, start.y + Direction.y));
         }
 
         public VoronoiEdge Twin
@@ -47,6 +47,8 @@ namespace ESGI.Voronoi.Fortune
         private float CoeffDir => _coeffDir;
 
         private float OriginOrdonnee => _originOrdonnee;
+
+        public Vertex SecondPoint => _secondPoint;
 
         public float GetY(float border)
         {

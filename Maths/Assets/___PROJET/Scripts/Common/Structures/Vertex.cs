@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using ESGI.Voronoi.Fortune;
 
 namespace ESGI.Structures
 {
@@ -26,5 +27,7 @@ namespace ESGI.Structures
 
         public float x => position.x;
         public float y => position.y;
+
+        public VoronoiCell cell;
     }
 }

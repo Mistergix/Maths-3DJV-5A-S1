@@ -1,4 +1,5 @@
 ﻿using ESGI.Common;
+using ESGI.Structures;
 using ESGI.Voronoi.Fortune;
 using UnityEngine;
 using Event = ESGI.Common.Event;
@@ -7,11 +8,11 @@ namespace ESGI.Voronoi.Fortune
 {
     public class Arc
     {
-        public Vector2 site;
+        public Vertex site;
         public CircleEvent circleEvent;
         public Parabola parabola;
 
-        public Arc (Vector2 site){
+        public Arc (Vertex site){
             this.site = site;
             parabola = new Parabola();
         }

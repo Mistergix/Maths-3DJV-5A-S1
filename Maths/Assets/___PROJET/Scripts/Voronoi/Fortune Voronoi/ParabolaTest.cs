@@ -1,4 +1,5 @@
 ﻿using System;
+using ESGI.Structures;
 using PGSauce.Core;
 using PGSauce.Core.Utilities;
 using Shapes;
@@ -25,7 +26,7 @@ namespace ESGI.Common
             base.DrawShapes(cam);
             using (Draw.Command(cam))
             {
-                _parabola.ComputeParabolaFromFocusAndHorizontalLine(focus, lineY);
+                _parabola.ComputeParabolaFromFocusAndHorizontalLine(new Vertex(focus), lineY);
                 var step = (xRange.max - xRange.min) / (iterations - 1);
                 for (int i = 0; i < iterations; i++)
                 { 

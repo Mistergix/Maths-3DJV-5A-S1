@@ -21,5 +21,10 @@ namespace ESGI.Common
                 positions.Add(PGUtils.RandomVector3(range));
             }
         }
+
+        public void AddPoint(Vector3 worldPos)
+        {
+            positions.Add(worldPos);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿
+using ESGI.Structures;
 using ESGI.Voronoi.Fortune;
 using UnityEngine;
 
@@ -34,8 +35,9 @@ namespace ESGI.Voronoi
         
         public VoronoiNode Parent { get; set; }
         public bool IsLeaf => LeftNode == null && RightNode == null;
+        public string Name => $"Node {Data.Site.x}, {Data.Site.y}";
 
-        public VoronoiNode(Vector2 nodeSite)
+        public VoronoiNode(Vertex nodeSite)
         {
             Data = new VoronoiNodeData(nodeSite) {Node = this};
         }

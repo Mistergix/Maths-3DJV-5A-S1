@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 796d6d7a2a4a440b903b96c082184871, type: 3}
-  m_Name: 3 Points 1
+  m_Name: "3 Points Buggu\xE9s Voronoi"
   m_EditorClassIdentifier: 
   positions:
   - {x: -29.39, y: 15}
-  - {x: -11.62, y: -7.88}
+  - {x: -13.7, y: -7.88}
   - {x: 13.69, y: -8.62}
   - {x: 20.6, y: 15.83}

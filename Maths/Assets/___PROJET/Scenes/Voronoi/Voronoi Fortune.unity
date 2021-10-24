@@ -167,13 +167,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useCullingMasks: 0
-  points: {fileID: 11400000, guid: 047fe53e8aab2f2478126f17028af6cc, type: 2}
+  points: {fileID: 11400000, guid: 0e3ab203419d5a24799ddb15e171a255, type: 2}
   displayData: {fileID: 11400000, guid: 360d2e7a19cee3648b99c4dbfec7fb85, type: 2}
-  lineY: 0
   Width: 10
-  Offset: 10
+  Offset: 80
+  debugLineY: -20
   lineColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   lineThickness: 0.2
+  sweepLineThickness: 0.3
+  sweepLineColor: {r: 0, g: 0, b: 0, a: 1}
+  parabolaDrawQuality: 500
+  parabolaColorStart: {r: 1, g: 0.4745098, b: 0.22352941, a: 1}
+  parabolaColorEnd: {r: 0.2509804, g: 0.91764706, b: 1, a: 1}
+  parabolaWidth: 0.3
+  pointAtMouse: 0
+  drawParabolas: 0
 --- !u!1 &575217022
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,7 +17,9 @@ namespace ESGI.Voronoi.Fortune
             _voronoi = voronoiFortune;
         }
 
-        public VoronoiNodeData GetArcAboveSite(Vector2 site)
+        public VoronoiNode Root => _bst.Root;
+
+        public VoronoiNodeData GetArcAboveSite(Vertex site)
         {
             if (_bst.Root == null)
             {
@@ -148,8 +150,8 @@ namespace ESGI.Voronoi.Fortune
 
             var ry = 0.0f;
 
-            if(siteA.y < siteB.y) {return x2;}
-            return x1;
+            if(siteA.y < siteB.y) {return Mathf.Max(x1,x2);}
+            return Mathf.Min(x1,x2);
         }
 
 
@@ -184,7 +186,7 @@ namespace ESGI.Voronoi.Fortune
             }
         }
 
-        public void CreateRoot(Vector2 site)
+        public void CreateRoot(Vertex site)
         {
             _bst.Root = new VoronoiNode(site);
         }

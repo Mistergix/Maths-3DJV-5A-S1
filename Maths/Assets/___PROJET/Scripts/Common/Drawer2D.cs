@@ -31,6 +31,15 @@ namespace ESGI.Common
                     }
                 }
             }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                var mousePos = Input.mousePosition;
+                mousePos.z = 0;
+                var worldPos = Camera.main.ScreenToWorldPoint(mousePos);
+
+                points.AddPoint(worldPos);
+            }
             CustomUpdate();
         }
 

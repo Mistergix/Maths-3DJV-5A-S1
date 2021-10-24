@@ -1,12 +1,13 @@
-﻿using ESGI.Voronoi.Fortune;
+﻿using ESGI.Structures;
+using ESGI.Voronoi.Fortune;
 using UnityEngine;
 
 namespace ESGI.Common
 {
     public class SiteEvent : Event
     {
-        private Vector2 _site;
-        public SiteEvent(Vector2 point)
+        private Vertex _site;
+        public SiteEvent(Vertex point)
         {
             _site = point;
         }

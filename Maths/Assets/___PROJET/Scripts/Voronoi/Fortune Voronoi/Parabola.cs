@@ -1,4 +1,5 @@
-﻿using PGSauce.Core.PGDebugging;
+﻿using ESGI.Structures;
+using PGSauce.Core.PGDebugging;
 using UnityEngine;
 
 namespace ESGI.Common
@@ -9,7 +10,7 @@ namespace ESGI.Common
         private float focusY;
         private float lineY;
 
-        public void ComputeParabolaFromFocusAndHorizontalLine(Vector2 focus, float lineY)
+        public void ComputeParabolaFromFocusAndHorizontalLine(Vertex focus, float lineY)
         {
             //https://www.varsitytutors.com/hotmath/hotmath_help/topics/finding-the-equation-of-a-parabola-given-focus-and-directrix
             focusX = focus.x;
