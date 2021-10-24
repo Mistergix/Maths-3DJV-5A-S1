@@ -21,6 +21,14 @@ namespace ESGI.Common
             return 0;
         }
 
-        public abstract void HandleEvent(VoronoiFortune voronoiFortune);
+        public void HandleEvent(VoronoiFortune voronoiFortune)
+        {
+            voronoiFortune.lineY = GetLineY;
+            CustomHandleEvent(voronoiFortune);
+        }
+
+        protected abstract void CustomHandleEvent(VoronoiFortune voronoiFortune);
+
+        public abstract float GetLineY { get; }
     }
 }

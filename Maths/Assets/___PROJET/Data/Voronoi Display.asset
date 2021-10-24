@@ -9,9 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 796d6d7a2a4a440b903b96c082184871, type: 3}
-  m_Name: 2 Points 1
+  m_Script: {fileID: 11500000, guid: 1717087378d74e6f84f3845d44e5cf6b, type: 3}
+  m_Name: Voronoi Display
   m_EditorClassIdentifier: 
-  positions:
-  - {x: 0, y: -14.11}
-  - {x: 1, y: 5}
+  pointColor: {r: 0.003921569, g: 0.003921569, b: 0.003921569, a: 1}
+  pointSize: 0.3
+  arrowSize: 0.18
+  arrowStretchFactor: 3.71
+  arrowOffset: 0.14

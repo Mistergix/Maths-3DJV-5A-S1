@@ -23,5 +23,8 @@ namespace ESGI.Structures
         {
             this.position = position;
         }
+
+        public float x => position.x;
+        public float y => position.y;
     }
 }

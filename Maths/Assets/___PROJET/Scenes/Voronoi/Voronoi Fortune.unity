@@ -168,7 +168,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   useCullingMasks: 0
   points: {fileID: 11400000, guid: 047fe53e8aab2f2478126f17028af6cc, type: 2}
-  displayData: {fileID: 11400000, guid: c7e02d7f24e18ad4fac3176edfbde442, type: 2}
+  displayData: {fileID: 11400000, guid: 360d2e7a19cee3648b99c4dbfec7fb85, type: 2}
+  lineY: 0
+  Width: 10
+  Offset: 10
+  lineColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  lineThickness: 0.2
 --- !u!1 &575217022
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,7 +302,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.97647065, g: 0.97647065, b: 0.97647065, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -314,7 +319,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 30
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

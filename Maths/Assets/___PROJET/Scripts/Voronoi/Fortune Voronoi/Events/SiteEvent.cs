@@ -12,10 +12,12 @@ namespace ESGI.Common
         }
 
         public override float Priority => _site.y;
-        public override void HandleEvent(VoronoiFortune voronoiFortune)
+
+        protected override void CustomHandleEvent(VoronoiFortune voronoiFortune)
         {
             voronoiFortune.InsertInBeachLine(_site);
-            voronoiFortune.lineY = _site.y;
         }
+
+        public override float GetLineY => _site.y;
     }
 }

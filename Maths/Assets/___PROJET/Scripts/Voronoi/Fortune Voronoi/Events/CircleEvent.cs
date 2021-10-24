@@ -1,13 +1,25 @@
-﻿using ESGI.Voronoi.Fortune;
+﻿using ESGI.Structures;
+using ESGI.Voronoi;
+using ESGI.Voronoi.Fortune;
 
 namespace ESGI.Common
 {
     public class CircleEvent : Event
     {
-        public override float Priority { get; }
-        public override void HandleEvent(VoronoiFortune voronoiFortune)
+        private Vertex _vertex;
+        public CircleEvent(Vertex vertex)
         {
-            voronoiFortune.lineY = ;
+            _vertex = vertex;
         }
+
+        public override float Priority => _vertex.y;
+        public VoronoiNode Arch { get; set; }
+
+        protected override void CustomHandleEvent(VoronoiFortune voronoiFortune)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override float GetLineY => _vertex.y;
     }
 }

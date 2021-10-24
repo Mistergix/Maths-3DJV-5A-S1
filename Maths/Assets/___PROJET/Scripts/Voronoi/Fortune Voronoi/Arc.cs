@@ -1,5 +1,5 @@
 ﻿using ESGI.Common;
-using ESGI.Voronoi.Fortune_Voronoi;
+using ESGI.Voronoi.Fortune;
 using UnityEngine;
 using Event = ESGI.Common.Event;
 

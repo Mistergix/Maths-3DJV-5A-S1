@@ -1,21 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ___PROJET.Scripts.Voronoi.Fortune_Voronoi.BST;
+﻿using ESGI.Structures;
 using ESGI.Voronoi;
 using ESGI.Voronoi.Fortune;
 using PGSauce.Core.PGDebugging;
 using UnityEngine;
 
-namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
+namespace ESGI.Voronoi.Fortune
 {
     public class BeachLine
     {
-        private BinarySearchTree<VoronoiNodeData> _bst;
+        private BinarySearchTree _bst;
         private VoronoiFortune _voronoi;
 
         public BeachLine(VoronoiFortune voronoiFortune)
         {
-            _bst = new BinarySearchTree<VoronoiNodeData>();
+            _bst = new BinarySearchTree();
             _voronoi = voronoiFortune;
         }
 
@@ -23,13 +21,12 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
         {
             if (_bst.Root == null)
             {
-                _bst.Root = new VoronoiNode(site);
-                return _bst.Root;
+                return null;
             }
 
             var node = _bst.Root;
             while(!node.IsLeaf){
-                var x = GetX(node, _voronoi.lineY);
+                var x = GetX(node.Data.Node, _voronoi.lineY);
                 node = x > site.x ? node.LeftNode : node.RightNode;
             }
 
@@ -43,11 +40,16 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             return ComputeBreakPointX(left.Data.Arc, right.Data.Arc);
         }
 
-        public VoronoiNode GetLeftChild(VoronoiNode node){
+        public VoronoiNode GetLeftChild(VoronoiNode node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
             var left = node.LeftNode;
 
             // The arc to the left of the break point is the right most node in the left tree
-            while(left.IsLeaf){
+            while(!left.IsLeaf){
                 left = left.RightNode;
             }
 
@@ -55,10 +57,14 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
         }
 
         public VoronoiNode GetRightChild(VoronoiNode node){
-            var right = bstRoot.RightNode;
+            if (node == null)
+            {
+                return null;
+            }
+            var right = node.RightNode;
 
             // The arc to the right of the break point is the left most node in the right tree
-            while(right.IsLeaf){
+            while(!right.IsLeaf){
                 right = right.LeftNode;
             }
 
@@ -72,7 +78,7 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             while(parent.LeftNode.Equals(last)){
                 if(parent.Parent == null) {return null;}
                 last = parent;
-                parent = parent.parent;
+                parent = parent.Parent;
             }
 
             return parent;
@@ -85,7 +91,7 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             while(parent.RightNode.Equals(last)){
                 if(parent.Parent == null) {return null;}
                 last = parent;
-                parent = parent.parent;
+                parent = parent.Parent;
             }
 
             return parent;
@@ -127,7 +133,7 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
 
             if(delta < 0) {
                 PGDebug.Message("one parabola is inside the other, should never happen, no intersections").LogError();
-                return new List<Vector2>();
+                return 0;
             }
 
             if(delta == 0.0f){
@@ -146,6 +152,41 @@ namespace ___PROJET.Scripts.Voronoi.Fortune_Voronoi
             return x1;
         }
 
-        
+
+        public void FinishEdge()
+        {
+            FinishEdge(_bst.Root);
+        }
+
+        private void FinishEdge(VoronoiNode node)
+        {
+            var border = 0.0f;
+            var edgeX = node.Data.Edge.Start.x;
+            if (node.Data.Edge.Direction.x > 0)
+            {
+                border = Mathf.Max(_voronoi.Width, edgeX + _voronoi.Offset);
+            }
+            else
+            {
+                border = Mathf.Min(0.0f, edgeX - _voronoi.Offset);
+            }
+
+            var y = node.Data.Edge.GetY(border);
+            node.Data.Edge.End = new Vertex(new Vector2(border, y));
+            if (!node.LeftNode.IsLeaf)
+            {
+                FinishEdge(node.LeftNode);
+            }
+            
+            if (!node.RightNode.IsLeaf)
+            {
+                FinishEdge(node.RightNode);
+            }
+        }
+
+        public void CreateRoot(Vector2 site)
+        {
+            _bst.Root = new VoronoiNode(site);
+        }
     }
 }

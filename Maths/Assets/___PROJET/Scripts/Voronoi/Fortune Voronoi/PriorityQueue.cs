@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ESGI.Voronoi.Fortune_Voronoi
+namespace ESGI.Voronoi.Fortune
 {
     public class PriorityQueue<T> where T : IComparable<T>
     {

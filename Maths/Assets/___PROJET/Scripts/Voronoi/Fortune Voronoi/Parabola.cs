@@ -25,8 +25,6 @@ namespace ESGI.Common
         }
 
         public (float a, float b, float c) GetCoeffs(){
-            var A = (x - focusX) * (x - focusX);
-            var B = focusY * focusY - lineY * lineY;
             var C = 2 * (focusY - lineY);
             if (C == 0.0f)
             {
@@ -34,10 +32,8 @@ namespace ESGI.Common
                 return (0,0,0);
             }
 
-
             var a = 1 / C;
             var b = (- 2 * focusX) / C;
-            //var c = (focusX * focusX + B) / C;
             var c = lineY + C / 4 + focusX * focusX / C; 
 
             return (a,b,c);
