@@ -13,7 +13,5 @@ MonoBehaviour:
   m_Name: 3 Points 1
   m_EditorClassIdentifier: 
   positions:
-  - {x: -29.39, y: 15}
-  - {x: -11.62, y: -7.88}
-  - {x: 13.69, y: -8.62}
-  - {x: 20.6, y: 15.83}
+  - {x: 8.248687, y: 22.383537}
+  - {x: 0, y: 0}

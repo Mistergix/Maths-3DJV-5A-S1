@@ -10,10 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 796d6d7a2a4a440b903b96c082184871, type: 3}
-  m_Name: "3 Points Buggu\xE9s Voronoi"
+  m_Name: Y aligned points
   m_EditorClassIdentifier: 
   positions:
-  - {x: -29, y: 15}
-  - {x: -20.11, y: -8}
-  - {x: 21, y: 16}
-  - {x: 14, y: -9}
+  - {x: 0, y: -10}
+  - {x: 0, y: -8}
+  - {x: 0, y: -6}
+  - {x: 0, y: -4}
+  - {x: 0, y: -2}
+  - {x: 0, y: 0}
+  - {x: 0, y: 2}
+  - {x: 0, y: 4}

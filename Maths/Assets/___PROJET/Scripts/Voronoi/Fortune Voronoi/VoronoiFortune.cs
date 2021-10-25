@@ -164,13 +164,27 @@ namespace ESGI.Voronoi.Fortune
             
             if (nodeData == null)
             {
+                _firstPoint = site;
                 _beachLine.CreateRoot(site);
                 return;
             }
 
-            if (nodeData.Node.IsLeaf && nodeData.Site.y - site.y < 0.01f)
+            if (_beachLine.Root.IsLeaf && _beachLine.Root.Data.Site.y - site.y < 0.01f)
             {
-                PGDebug.Message("Cas dégénéré").LogTodo();
+                Root.LeftNode = new VoronoiNode(_firstPoint);
+                Root.RightNode = new VoronoiNode(site);
+                var s = new Vertex(new Vector2((site.x + _firstPoint.x) / 2, Height));
+                if (site.x > _firstPoint.x)
+                {
+                    Root.Data.Edge = new VoronoiEdge(s, _firstPoint, site);
+                }
+                else
+                {
+                    Root.Data.Edge = new VoronoiEdge(s, site, _firstPoint);
+                }
+                
+                _dcel.AddEdge(Root.Data.Edge);
+                return;
             }
 
             nodeData.CleanQueue(Queue);
