@@ -43,10 +43,12 @@ namespace ESGI.Voronoi.Fortune
 
         private Camera cam;
         private Vector2 mousePoint;
+        private Vertex _firstPoint;
 
         private void Awake()
         {
             cam = Camera.main;
+            debugLineY = -20;
             Init();
         }
 
@@ -201,26 +203,29 @@ namespace ESGI.Voronoi.Fortune
             CheckCircle(rightNode);
         }
 
-        private void CheckCircle(VoronoiNode node){
-            var leftParent = _beachLine.GetLeftParent(node);
-            var rightParent = _beachLine.GetRightParent(node);
+        public float Height => Width;
+
+        public VoronoiNode Root => _beachLine.Root;
+
+        private void CheckCircle(VoronoiNode b){
+            var leftParent = _beachLine.GetLeftParent(b);
+            var rightParent = _beachLine.GetRightParent(b);
 
             var a = _beachLine.GetLeftChild(leftParent);
             var c = _beachLine.GetRightChild(rightParent);
             
             if(a == null || c == null || a.Data.Site.Equals(c.Data.Site)){return;}
 
-            var intersection = GetIntersection(leftParent.Data.Edge, rightParent.Data.Edge);
-            if(intersection == null){return;}
+            var s = GetIntersection(leftParent.Data.Edge, rightParent.Data.Edge);
+            if(s == null){return;}
 
-            var dist = Vector2.Distance(a.Data.Site.position, intersection.position);
-            var distanceToIntersection = intersection.y - dist;
+            var d = Vector2.Distance(a.Data.Site.position, s.position);
+            var distanceToIntersection = s.y - d;
             if(distanceToIntersection >= lineY) {return;}
 
-            var pos = new Vector2(intersection.x, distanceToIntersection);
-            var e = new CircleEvent(new Vertex(pos),node);
-            node.Data.Arc.circleEvent = e;
-            e.Arch = node;
+            var pos = new Vector2(s.x, distanceToIntersection);
+            var e = new CircleEvent(new Vertex(pos),b);
+            
             Queue.Enqueue(e);
         }
 
@@ -285,7 +290,7 @@ namespace ESGI.Voronoi.Fortune
             var pos = new Vector2(e.Vertex.x, p1.Data.Arc.Compute(e.Vertex.x, lineY));
             var p = new Vertex(pos);
 
-            if (p0.Data.Site.cell.Equals(p1.Data.Site.cell))
+            if (p0.Data.Site.cell.Last == (p1.Data.Site.cell.First))
             {
                 p1.Data.Site.cell.AddLeft(p);
             }
@@ -345,7 +350,7 @@ namespace ESGI.Voronoi.Fortune
             }
             
             CheckCircle(p0);
-            CheckCircle(p1);
+            CheckCircle(p2);
         }
     }
 }

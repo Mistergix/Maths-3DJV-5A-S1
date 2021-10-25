@@ -12,6 +12,9 @@ namespace ESGI.Common
         {
             _vertex = vertex;
             _node = node;
+            
+            node.Data.Arc.circleEvent = this;
+            Arch = node;
         }
 
         public override float Priority => Vertex.y;
