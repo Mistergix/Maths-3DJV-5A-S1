@@ -64,6 +64,7 @@ namespace PGSauce.Core.Utilities
 		// Play mode change callback handles the scene load/reload.
 		private static void OnPlayModeChanged(PlayModeStateChange state)
 		{
+			return;
 			if (!LoadMasterOnPlay)
 			{
 				return;
