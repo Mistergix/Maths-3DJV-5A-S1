@@ -12,8 +12,6 @@ namespace ESGI.ConvexHull3D
         public List<Vertex3D> vertices;
         public List<Edge3D> edges;
         public List<Face3D> faces;
-        
-        public Color LineColor => Color.black;
 
         public IncidenceGraph()
         {
@@ -44,14 +42,12 @@ namespace ESGI.ConvexHull3D
             {
                 Shapes.Draw.Disc(point.position, data.pointSize, data.pointColor);
             }
-
-            foreach (var triangle in faces)
+            
+            foreach (var edge in edges)
             {
                 Shapes.Draw.UseDashes = true;
                 Shapes.Draw.DashStyle = DashStyle.defaultDashStyle;
-                Draw.Line(triangle.p1.position, triangle.p2.position, LineColor);
-                Draw.Line(triangle.p2.position, triangle.p3.position, LineColor);
-                Draw.Line(triangle.p3.position, triangle.p1.position, LineColor);
+                Shapes.Draw.Line(edge.p1.position, edge.p2.position, edge.GetColorFromNodeColor());
             }
 
             foreach (var face in faces)
@@ -59,11 +55,6 @@ namespace ESGI.ConvexHull3D
                 face.DrawHyperPlan(data);
             }
             
-            var drawnEdges = new HashSet<Edge3D>();
-            foreach (var edge in edges)
-            {
-                //DrawEdge(edge, drawnEdges, data);
-            }
         }
 
         private void DrawEdge(Edge3D edge, HashSet<Edge3D> drawnEdges, DisplayData data)

@@ -45,12 +45,41 @@ namespace ESGI.ConvexHull3D
             for (int q = 4; q < Math.Min(points.positions.Count, currentQ + 1); q++)
             {
                 var point = this.points.positions[q];
-                foreach (var face in _convexHull.faces)
+                ComputeBlueAndRedFaces(point);
+                var pointIsInsideConvexHull = _convexHull.faces.All(face3D => face3D.color != Node.NodeColor.Blue);
+                if (pointIsInsideConvexHull)
                 {
-                    face.SetColorFromPoint(point);
+                    // 2A
+                }
+                else
+                {
+                    //2B
+                    foreach (var edge in _convexHull.edges)
+                    {
+                        if (edge.face1.color == Node.NodeColor.Red && edge.face2.color == Node.NodeColor.Red)
+                        {
+                            edge.color = Node.NodeColor.Red;
+                        }
+                        else if (edge.face1.color == Node.NodeColor.Blue && edge.face2.color == Node.NodeColor.Blue)
+                        {
+                            edge.color = Node.NodeColor.Blue;
+                        }
+                        else
+                        {
+                            edge.color = Node.NodeColor.Purple;
+                        }
+                    }
                 }
             }
             Drawing.Draw.WireSphere(points.positions[currentQ], 0.5f, PGColors.Redish);
+        }
+
+        private void ComputeBlueAndRedFaces(Vector3 point)
+        {
+            foreach (var face in _convexHull.faces)
+            {
+                face.SetColorFromPoint(point);
+            }
         }
 
         private IncidenceGraph ComputeTetrahedre()
@@ -82,7 +111,7 @@ namespace ESGI.ConvexHull3D
             edge01.face2 = face013;
 
             edge20.face1 = face023;
-            edge20.face1 = face012;
+            edge20.face2 = face012;
 
             edge30.face1 = face013;
             edge30.face2 = face023;
