@@ -49,9 +49,14 @@ namespace ESGI.ConvexHull3D
             {
                 Shapes.Draw.UseDashes = true;
                 Shapes.Draw.DashStyle = DashStyle.defaultDashStyle;
-                Shapes.Draw.Line(triangle.edge1.p1.position, triangle.edge1.p2.position, LineColor);
-                Shapes.Draw.Line(triangle.edge2.p1.position, triangle.edge2.p2.position, LineColor);
-                Shapes.Draw.Line(triangle.edge3.p1.position, triangle.edge3.p2.position, LineColor);
+                Draw.Line(triangle.p1.position, triangle.p2.position, LineColor);
+                Draw.Line(triangle.p2.position, triangle.p3.position, LineColor);
+                Draw.Line(triangle.p3.position, triangle.p1.position, LineColor);
+            }
+
+            foreach (var face in faces)
+            {
+                face.DrawHyperPlan(data);
             }
             
             var drawnEdges = new HashSet<Edge3D>();

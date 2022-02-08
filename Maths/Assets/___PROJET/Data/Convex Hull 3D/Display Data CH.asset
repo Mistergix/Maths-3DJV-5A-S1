@@ -17,3 +17,5 @@ MonoBehaviour:
   arrowSize: 0.18
   arrowStretchFactor: 3.71
   arrowOffset: 0.14
+  planeSize: 0.85
+  planeColor: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 1}
