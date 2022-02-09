@@ -1,4 +1,5 @@
 ﻿using ESGI.Common;
+using PGSauce.Core;
 using PGSauce.Core.PGDebugging;
 using UnityEngine;
 
@@ -41,6 +42,31 @@ namespace ESGI.ConvexHull3D
         public void SetColorFromPoint(Vector3 point)
         {
             color = _plane.GetSide(point) ? NodeColor.Blue : NodeColor.Red;
+        }
+
+        public void DrawOrder(DisplayData data)
+        {
+            DrawEdge(p1, p2, data);
+            DrawEdge(p2, p3, data);
+            DrawEdge(p3, p1, data);
+        }
+
+        private void DrawEdge(Vertex3D a, Vertex3D b, DisplayData data)
+        {
+            FromTo(a,b, out var from, out var to, data);
+            Drawing.Draw.Arrow(from, to, -Vector3.forward, data.arrowSize, PGColors.Redish);
+        }
+
+        private void FromTo(Vertex3D a, Vertex3D b, out Vector3 to, out Vector3 @from, DisplayData Data)
+        {
+            from = a.position;
+            to = b.position;
+            var dir = (to - @from).normalized;
+            var right = Vector3.Cross(dir, -Vector3.forward);
+            @from += dir * (Data.pointSize * Data.arrowStretchFactor);
+            to -= dir * (Data.pointSize * Data.arrowStretchFactor);
+            @from += right * Data.arrowOffset;
+            to += right * Data.arrowOffset;
         }
     }
 }

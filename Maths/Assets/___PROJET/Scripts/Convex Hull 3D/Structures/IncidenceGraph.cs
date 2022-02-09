@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ESGI.Common;
-using PGSauce.Core;
 using Shapes;
-using UnityEngine;
-using Draw = Drawing.Draw;
 
 namespace ESGI.ConvexHull3D
 {
@@ -25,7 +23,6 @@ namespace ESGI.ConvexHull3D
             vertices.AddRange(v);
         }
 
-
         public void AddEdges(List<Edge3D> edge3Ds)
         {
             edges.AddRange(edge3Ds);
@@ -40,7 +37,7 @@ namespace ESGI.ConvexHull3D
         {
             foreach (var point in vertices)
             {
-                Shapes.Draw.Disc(point.position, data.pointSize, data.pointColor);
+                Shapes.Draw.Disc(point.position, data.pointSize, point.GetColorFromNodeColor());
             }
             
             foreach (var edge in edges)
@@ -53,28 +50,25 @@ namespace ESGI.ConvexHull3D
             foreach (var face in faces)
             {
                 face.DrawHyperPlan(data);
+                face.DrawOrder(data);
             }
-            
+        }
+        
+        public void RemoveBlueElements()
+        {
+            vertices = vertices.Where(vertex3D => vertex3D.color != Node.NodeColor.Blue).ToList();
+            edges = edges.Where(edge3D => edge3D.color != Node.NodeColor.Blue).ToList();
+            faces = faces.Where(face => face.color != Node.NodeColor.Blue).ToList();
         }
 
-        private void DrawEdge(Edge3D edge, HashSet<Edge3D> drawnEdges, DisplayData data)
+        public IncidenceGraph GetPurpleGraph()
         {
-            if(drawnEdges.Contains(edge)) {return;}
-            FromTo(edge, out var from, out var to, data);
-            Draw.Arrow(from, to, -Vector3.forward, data.arrowSize, PGColors.Redish);
-            drawnEdges.Add(edge);
-        }
-
-        private void FromTo(Edge3D halfEdge, out Vector3 @from, out Vector3 to, DisplayData Data)
-        {
-            from = (Vector3) halfEdge.p1.position;
-            to = (Vector3) halfEdge.p2.position;
-            var dir = (to - @from).normalized;
-            var right = Vector3.Cross(dir, -Vector3.forward);
-            @from += dir * (Data.pointSize * Data.arrowStretchFactor);
-            to -= dir * (Data.pointSize * Data.arrowStretchFactor);
-            @from += right * Data.arrowOffset;
-            to += right * Data.arrowOffset;
+            var pGraph = new IncidenceGraph();
+            var pV = vertices.Where(v => v.color == Node.NodeColor.Purple).ToList();
+            var pE = edges.Where(edge3D => edge3D.color == Node.NodeColor.Purple).ToList();
+            pGraph.edges = pE;
+            pGraph.vertices = pV;
+            return pGraph;
         }
     }
 }

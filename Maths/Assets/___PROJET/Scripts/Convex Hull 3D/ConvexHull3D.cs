@@ -15,7 +15,6 @@ namespace ESGI.ConvexHull3D
     public class ConvexHull3D : ImmediateModeShapeDrawer
     {
         [SerializeField] private Points3D points;
-        [SerializeField, Min(4)] private int currentQ = 4;
 
         public DisplayData Data => displayData;
 
@@ -42,7 +41,7 @@ namespace ESGI.ConvexHull3D
         public void ComputeHull()
         {
             _convexHull = ComputeTetrahedre();
-            for (int q = 4; q < Math.Min(points.positions.Count, currentQ + 1); q++)
+            for (int q = 4; q < points.positions.Count; q++)
             {
                 var point = this.points.positions[q];
                 ComputeBlueAndRedFaces(point);
@@ -50,28 +49,115 @@ namespace ESGI.ConvexHull3D
                 if (pointIsInsideConvexHull)
                 {
                     // 2A
+                    foreach (var edge in _convexHull.edges)
+                    {
+                        edge.SetColor(Node.NodeColor.None);
+                    }
                 }
                 else
                 {
                     //2B
-                    foreach (var edge in _convexHull.edges)
-                    {
-                        if (edge.face1.color == Node.NodeColor.Red && edge.face2.color == Node.NodeColor.Red)
-                        {
-                            edge.color = Node.NodeColor.Red;
-                        }
-                        else if (edge.face1.color == Node.NodeColor.Blue && edge.face2.color == Node.NodeColor.Blue)
-                        {
-                            edge.color = Node.NodeColor.Blue;
-                        }
-                        else
-                        {
-                            edge.color = Node.NodeColor.Purple;
-                        }
-                    }
+                    ColorEdges();
+                    ColorVertices();
+                    RemoveBlueElements();
+                    CombineWithPurpleGraph(point);
                 }
             }
-            Drawing.Draw.WireSphere(points.positions[currentQ], 0.5f, PGColors.Redish);
+            Drawing.Draw.WireSphere(points.positions.Last(), 0.5f, PGColors.Redish);
+        }
+
+        private void CombineWithPurpleGraph(Vector3 point)
+        {
+            var purpleIGraph = _convexHull.GetPurpleGraph();
+            var pointVertex = new Vertex3D(point);
+            foreach (var vertex in purpleIGraph.vertices)
+            {
+                var edge = new Edge3D(pointVertex, vertex);
+                _convexHull.edges.Add(edge);
+            }
+
+            foreach (var edge in purpleIGraph.edges)
+            {
+                var face = GetRedFace(edge);
+                var begin = face.p1;
+                var end = face.p2;
+                if (!(begin.Equals(edge.p1) && end.Equals(edge.p2) || begin.Equals(edge.p2) && end.Equals(edge.p1)))
+                {
+                    begin = face.p2;
+                    end = face.p3;
+                    
+                    if (!(begin.Equals(edge.p1) && end.Equals(edge.p2) || begin.Equals(edge.p2) && end.Equals(edge.p1)))
+                    {
+                        begin = face.p3;
+                        end = face.p1;
+                    }
+                }
+
+                var newFace = new Face3D(begin, end, pointVertex);
+                _convexHull.faces.Add(newFace);
+                if (edge.face1.color == Node.NodeColor.Blue)
+                {
+                    edge.face1 = newFace;
+                }
+                else
+                {
+                    edge.face2 = newFace;
+                }
+            }
+        }
+
+        private static Face3D GetRedFace(Edge3D edge)
+        {
+            return edge.face1.color == Node.NodeColor.Red ? edge.face1 : edge.face2;
+        }
+
+        private void RemoveBlueElements()
+        {
+            _convexHull.RemoveBlueElements();
+        }
+
+        private void ColorVertices()
+        {
+            var blueEdges = _convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Blue).ToList();
+            var redEdge3Ds = _convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Red).ToList();
+            var purpleEdges = _convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Purple).ToList();
+
+            foreach (var edge3D in redEdge3Ds)
+            {
+                edge3D.p1.SetColor(Node.NodeColor.Red);
+                edge3D.p2.SetColor(Node.NodeColor.Red);
+            }
+
+            foreach (var edge3D in blueEdges)
+            {
+                edge3D.p1.SetColor(Node.NodeColor.Blue);
+                edge3D.p2.SetColor(Node.NodeColor.Blue);
+            }
+
+            foreach (var edge3D in purpleEdges)
+            {
+                edge3D.p1.SetColor(Node.NodeColor.Purple);
+                edge3D.p2.SetColor(Node.NodeColor.Purple);
+            }
+        }
+
+        private void ColorEdges()
+        {
+            foreach (var edge in _convexHull.edges)
+            {
+                if (edge.face1.color == Node.NodeColor.Red && edge.face2.color == Node.NodeColor.Red)
+                {
+                    edge.SetColor(Node.NodeColor.Red);
+                }
+                else if (edge.face1.color == Node.NodeColor.Blue && edge.face2.color == Node.NodeColor.Blue)
+                {
+                    edge.SetColor(Node.NodeColor.Blue);
+                }
+                else
+                {
+                    edge.SetColor(Node.NodeColor.Purple);
+                }
+            }
         }
 
         private void ComputeBlueAndRedFaces(Vector3 point)

@@ -17,9 +17,9 @@ namespace ESGI.ConvexHull3D
 
         public NodeColor color = NodeColor.None;
 
-        public virtual void ResetColor()
+        public virtual void SetColor(NodeColor c)
         {
-            color = NodeColor.None;
+            color = c;
         }
 
         public Color GetColorFromNodeColor()
