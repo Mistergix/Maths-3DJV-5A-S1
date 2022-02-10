@@ -34,5 +34,10 @@ namespace ESGI.ConvexHull3D
                     throw new ArgumentOutOfRangeException();
             }
         }
+
+        protected bool NodeEquals(Vertex3D myNode1, Vertex3D myNode2, Vertex3D otherNode1, Vertex3D otherNode2)
+        {
+            return otherNode1.Equals(myNode1) && otherNode2.Equals(myNode2) || otherNode1.Equals(myNode2) && otherNode2.Equals(myNode1);
+        }
     }
 }

@@ -68,5 +68,12 @@ namespace ESGI.ConvexHull3D
             @from += right * Data.arrowOffset;
             to += right * Data.arrowOffset;
         }
+
+        public bool HasEdge(Vertex3D v1, Vertex3D v2)
+        {
+            return NodeEquals(p1, p2, v1, v2)
+                   || NodeEquals(p2, p3, v1, v2)
+                   || NodeEquals(p3, p1, v1, v2);
+        }
     }
 }

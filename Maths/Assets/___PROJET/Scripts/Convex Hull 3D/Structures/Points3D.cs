@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using PGSauce.Core.Utilities;
 using Sirenix.OdinInspector;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace ESGI.ConvexHull3D
@@ -9,8 +12,13 @@ namespace ESGI.ConvexHull3D
     [CreateAssetMenu(menuName = "ESGI/Points 3D")]
     public class Points3D : ScriptableObject, IEnumerable<Vector3>
     {
+        [SerializeField, MinValue(3), MaxValue("MaxPossibleQ")] private int maxQ = 4;
+        public bool stopAtColoring;
         public List<Vector3> positions;
-        
+
+        public int MaxQ => Mathf.Min(positions.Count - 1, maxQ);
+        public Vector3 MaxQPoint => positions[MaxQ];
+
         [Button]
         private void GenerateRandomPoints(MinMax<Vector3> range, int count = 20)
         {
@@ -34,6 +42,12 @@ namespace ESGI.ConvexHull3D
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        [UsedImplicitly]
+        private int MaxPossibleQ()
+        {
+            return positions.Count - 1;
         }
     }
 }

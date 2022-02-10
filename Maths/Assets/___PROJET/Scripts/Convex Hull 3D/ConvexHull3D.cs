@@ -41,9 +41,9 @@ namespace ESGI.ConvexHull3D
         public void ComputeHull()
         {
             _convexHull = ComputeTetrahedre();
-            for (int q = 4; q < points.positions.Count; q++)
+            for (int q = 4; q <= points.MaxQ; q++)
             {
-                var point = this.points.positions[q];
+                var point = points.positions[q];
                 ComputeBlueAndRedFaces(point);
                 var pointIsInsideConvexHull = _convexHull.faces.All(face3D => face3D.color != Node.NodeColor.Blue);
                 if (pointIsInsideConvexHull)
@@ -59,51 +59,153 @@ namespace ESGI.ConvexHull3D
                     //2B
                     ColorEdges();
                     ColorVertices();
+                    if (points.stopAtColoring && q == points.MaxQ)
+                    {
+                        continue;
+                    }
                     RemoveBlueElements();
                     CombineWithPurpleGraph(point);
                 }
             }
-            Drawing.Draw.WireSphere(points.positions.Last(), 0.5f, PGColors.Redish);
+            Drawing.Draw.WireSphere(points.MaxQPoint, 0.5f, PGColors.Redish);
         }
 
         private void CombineWithPurpleGraph(Vector3 point)
         {
             var purpleIGraph = _convexHull.GetPurpleGraph();
             var pointVertex = new Vertex3D(point);
-            foreach (var vertex in purpleIGraph.vertices)
-            {
-                var edge = new Edge3D(pointVertex, vertex);
-                _convexHull.edges.Add(edge);
-            }
+            var newEdges = CreateEdgesFromPurpleGraph(purpleIGraph, pointVertex);
+
+            var newFaces = new List<Face3D>();
 
             foreach (var edge in purpleIGraph.edges)
             {
                 var face = GetRedFace(edge);
-                var begin = face.p1;
-                var end = face.p2;
-                if (!(begin.Equals(edge.p1) && end.Equals(edge.p2) || begin.Equals(edge.p2) && end.Equals(edge.p1)))
+                var (begin, end) = GetOrderedVertices(face, edge);
+                var newFace = CreateNewFace(begin, end, pointVertex, edge);
+                newFaces.Add(newFace);
+                /*
+                var newEdge = FindEdge(newEdges, pointVertex, end);
+                newEdge.face1 = newFace;
+
+                newEdge = FindEdge(newEdges, pointVertex, begin);
+                newEdge.face1 = newFace;*/
+            }
+
+            foreach (var edge in newEdges)
+            {
+                foreach (var face in newFaces)
                 {
-                    begin = face.p2;
-                    end = face.p3;
+                    TryConnectFaceToEdge(edge, face, pointVertex);
                     
-                    if (!(begin.Equals(edge.p1) && end.Equals(edge.p2) || begin.Equals(edge.p2) && end.Equals(edge.p1)))
+                    if (edge.face1 != null && edge.face2 != null)
                     {
-                        begin = face.p3;
-                        end = face.p1;
+                        break;
                     }
                 }
-
-                var newFace = new Face3D(begin, end, pointVertex);
-                _convexHull.faces.Add(newFace);
-                if (edge.face1.color == Node.NodeColor.Blue)
-                {
-                    edge.face1 = newFace;
-                }
-                else
-                {
-                    edge.face2 = newFace;
-                }
             }
+            
+            
+            
+            _convexHull.vertices.Add(pointVertex);
+        }
+
+        private void TryConnectFaceToEdge(Edge3D edge, Face3D face, Vertex3D pointVertex)
+        {
+            // WE KNOW pointVertex belongs to edge AND face
+            // We look at other vertex in edge, and see if it belongs to face
+            // if not, then None
+            // else, edge belongs to face
+            // if pointVertex is at the end of edge on face, then Face1
+            // else, it is at the beginning of edge on face, then Face2
+
+            var otherVertex = edge.p1.Equals(pointVertex) ? edge.p2 : edge.p1;
+            if (!face.HasEdge(pointVertex, otherVertex))
+            {
+                return;
+            }
+
+            if (IsBeginVertexOnFace(edge, pointVertex, face))
+            {
+                edge.face2 = face;
+            }
+            else
+            {
+                edge.face1 = face;
+            }
+        }
+
+        private bool IsBeginVertexOnFace(Edge3D edge, Vertex3D testedVertex, Face3D face)
+        {
+            var (begin, end) = GetOrderedVertices(face, edge);
+            return testedVertex.Equals(begin);
+        }
+
+        private List<Edge3D> CreateEdgesFromPurpleGraph(IncidenceGraph purpleIGraph, Vertex3D pointVertex)
+        {
+            var newEdges = new List<Edge3D>();
+
+            foreach (var vertex in purpleIGraph.vertices)
+            {
+                var edge = new Edge3D(pointVertex, vertex);
+                _convexHull.edges.Add(edge);
+                newEdges.Add(edge);
+            }
+
+            return newEdges;
+        }
+
+        private Face3D CreateNewFace(Vertex3D begin, Vertex3D end, Vertex3D pointVertex, Edge3D edge)
+        {
+            var newFace = new Face3D(begin, end, pointVertex);
+            _convexHull.faces.Add(newFace);
+            if (edge.face1.color == Node.NodeColor.Blue)
+            {
+                edge.face1 = newFace;
+            }
+            else
+            {
+                edge.face2 = newFace;
+            }
+
+            return newFace;
+        }
+
+        private static Edge3D FindEdge(IEnumerable<Edge3D> newEdges, Vertex3D begin, Vertex3D end)
+        {
+            foreach (var edge in newEdges.Where(edge => EdgeEqualsTwoVertices(edge, begin, end)))
+            {
+                return edge;
+            }
+
+            throw new Exception(
+                $"Edge not found, should not happen, if it does, it may be because the edges were not ALL created from purple graph");
+        }
+
+        private static (Vertex3D begin, Vertex3D end) GetOrderedVertices(Face3D face, Edge3D edge)
+        {
+            var begin = face.p1;
+            var end = face.p2;
+            
+            if (EdgeEqualsTwoVertices(edge, begin, end))
+            {
+                return (begin, end);
+            }
+            
+            begin = face.p2;
+            end = face.p3;
+
+            if (EdgeEqualsTwoVertices(edge, begin, end))
+            {
+                return (begin, end);
+            }
+
+            return (face.p3, face.p1);
+        }
+
+        private static bool EdgeEqualsTwoVertices(Edge3D edge, Vertex3D begin, Vertex3D end)
+        {
+            return edge.EqualsTwoVertices(begin, end);
         }
 
         private static Face3D GetRedFace(Edge3D edge)

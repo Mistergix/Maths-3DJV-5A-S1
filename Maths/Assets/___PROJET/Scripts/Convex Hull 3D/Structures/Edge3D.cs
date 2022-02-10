@@ -13,5 +13,10 @@
             p1.AddEdge(this);
             p2.AddEdge(this);
         }
+
+        public bool EqualsTwoVertices(Vertex3D begin, Vertex3D end)
+        {
+            return NodeEquals(p1, p2, begin, end);
+        }
     }
 }
