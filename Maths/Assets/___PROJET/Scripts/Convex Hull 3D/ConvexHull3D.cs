@@ -16,6 +16,7 @@ namespace ESGI.ConvexHull3D
     public class ConvexHull3D : ImmediateModeShapeDrawer
     {
         [SerializeField] private Points3D points;
+        [SerializeField] private MeshDrawer meshDrawer;
 
         public DisplayData Data => displayData;
 
@@ -26,6 +27,7 @@ namespace ESGI.ConvexHull3D
         private void Update()
         {
             ComputeHull();
+            meshDrawer.DrawMesh(_convexHull);
         }
 
         private void OnDrawGizmos()
