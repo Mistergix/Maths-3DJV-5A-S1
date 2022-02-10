@@ -53,6 +53,10 @@ namespace ESGI.ConvexHull3D
         [Button]
         public void ComputeHull()
         {
+            PGDebug.Message(
+                    $"C'est ici qu'il faudrait checker s'il y a des points coplanaires (plus de 4), par forcément tous entre eux mais par morceaux, et calculer leur convex hull 2d et ne garder que ces points. Puis s'il reste moins de 4 points, ne mettre qu'un triangle")
+                .LogTodo();
+            
             _convexHull = ComputeTetrahedre();
             for (int q = 4; q <= points.MaxQ; q++)
             {
@@ -183,17 +187,6 @@ namespace ESGI.ConvexHull3D
             }
 
             return newFace;
-        }
-
-        private static Edge3D FindEdge(IEnumerable<Edge3D> newEdges, Vertex3D begin, Vertex3D end)
-        {
-            foreach (var edge in newEdges.Where(edge => EdgeEqualsTwoVertices(edge, begin, end)))
-            {
-                return edge;
-            }
-
-            throw new Exception(
-                $"Edge not found, should not happen, if it does, it may be because the edges were not ALL created from purple graph");
         }
 
         private static (Vertex3D begin, Vertex3D end) GetOrderedVertices(Face3D face, Edge3D edge)
