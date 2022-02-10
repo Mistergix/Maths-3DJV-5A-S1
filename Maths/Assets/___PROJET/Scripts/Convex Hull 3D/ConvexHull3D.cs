@@ -7,6 +7,7 @@ using PGSauce.Core;
 using PGSauce.Core.PGDebugging;
 using Shapes;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -25,6 +26,16 @@ namespace ESGI.ConvexHull3D
         private void Update()
         {
             ComputeHull();
+        }
+
+        private void OnDrawGizmos()
+        {
+            if(_convexHull == null){return;}
+            foreach (var vertex in _convexHull.vertices)
+            {
+                Handles.color = Color.blue;
+                Handles.Label(vertex.position, vertex.index.ToString());
+            }
         }
 
         public override void DrawShapes(Camera cam)
@@ -64,18 +75,40 @@ namespace ESGI.ConvexHull3D
                         continue;
                     }
                     RemoveBlueElements();
-                    CombineWithPurpleGraph(point);
+                    CombineWithPurpleGraph(point, q);
                 }
             }
             Drawing.Draw.WireSphere(points.MaxQPoint, 0.5f, PGColors.Redish);
         }
 
-        private void CombineWithPurpleGraph(Vector3 point)
+        private void CombineWithPurpleGraph(Vector3 point, int index)
         {
             var purpleIGraph = _convexHull.GetPurpleGraph();
-            var pointVertex = new Vertex3D(point);
+            var pointVertex = new Vertex3D(point, index);
             var newEdges = CreateEdgesFromPurpleGraph(purpleIGraph, pointVertex);
+            var newFaces = CreateNewFaces(purpleIGraph, pointVertex);
+            ConnectFacesAndEdges(newEdges, newFaces, pointVertex);
+            _convexHull.vertices.Add(pointVertex);
+        }
 
+        private void ConnectFacesAndEdges(List<Edge3D> newEdges, List<Face3D> newFaces, Vertex3D pointVertex)
+        {
+            foreach (var edge in newEdges)
+            {
+                foreach (var face in newFaces)
+                {
+                    TryConnectFaceToEdge(edge, face, pointVertex);
+
+                    if (edge.face1 != null && edge.face2 != null)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        private List<Face3D> CreateNewFaces(IncidenceGraph purpleIGraph, Vertex3D pointVertex)
+        {
             var newFaces = new List<Face3D>();
 
             foreach (var edge in purpleIGraph.edges)
@@ -84,30 +117,9 @@ namespace ESGI.ConvexHull3D
                 var (begin, end) = GetOrderedVertices(face, edge);
                 var newFace = CreateNewFace(begin, end, pointVertex, edge);
                 newFaces.Add(newFace);
-                /*
-                var newEdge = FindEdge(newEdges, pointVertex, end);
-                newEdge.face1 = newFace;
-
-                newEdge = FindEdge(newEdges, pointVertex, begin);
-                newEdge.face1 = newFace;*/
             }
 
-            foreach (var edge in newEdges)
-            {
-                foreach (var face in newFaces)
-                {
-                    TryConnectFaceToEdge(edge, face, pointVertex);
-                    
-                    if (edge.face1 != null && edge.face2 != null)
-                    {
-                        break;
-                    }
-                }
-            }
-            
-            
-            
-            _convexHull.vertices.Add(pointVertex);
+            return newFaces;
         }
 
         private void TryConnectFaceToEdge(Edge3D edge, Face3D face, Vertex3D pointVertex)
@@ -157,7 +169,7 @@ namespace ESGI.ConvexHull3D
 
         private Face3D CreateNewFace(Vertex3D begin, Vertex3D end, Vertex3D pointVertex, Edge3D edge)
         {
-            var newFace = new Face3D(begin, end, pointVertex);
+            var newFace = new Face3D(begin, end, pointVertex, _convexHull);
             _convexHull.faces.Add(newFace);
             if (edge.face1.color == Node.NodeColor.Blue)
             {
@@ -266,7 +278,7 @@ namespace ESGI.ConvexHull3D
         {
             foreach (var face in _convexHull.faces)
             {
-                face.SetColorFromPoint(point);
+                face.SetColorFromPoint(_convexHull, point);
             }
         }
 
@@ -281,7 +293,7 @@ namespace ESGI.ConvexHull3D
 
             var four = points.positions.Take(4).ToList();
             
-            var vertices = four.Select(point => new Vertex3D(point)).ToList();
+            var vertices = four.Select((point, i) => new Vertex3D(point, i)).ToList();
 
             var edge01 = new Edge3D(vertices[0], vertices[1]);
             var edge20 = new Edge3D(vertices[2], vertices[0]);

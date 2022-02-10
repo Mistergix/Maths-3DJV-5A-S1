@@ -49,7 +49,7 @@ namespace ESGI.ConvexHull3D
 
             foreach (var face in faces)
             {
-                face.DrawHyperPlan(data);
+                face.DrawHyperPlan(this, data);
                 face.DrawOrder(data);
             }
         }
@@ -69,6 +69,11 @@ namespace ESGI.ConvexHull3D
             pGraph.edges = pE;
             pGraph.vertices = pV;
             return pGraph;
+        }
+
+        public Vertex3D GetOtherPoint(Vertex3D p1, Vertex3D p2, Vertex3D p3)
+        {
+            return vertices.FirstOrDefault(v => !v.Equals(p1) && !v.Equals(p2) && !v.Equals(p3));
         }
     }
 }
