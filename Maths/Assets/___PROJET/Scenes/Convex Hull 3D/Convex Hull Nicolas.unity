@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -216,6 +216,8 @@ GameObject:
   m_Component:
   - component: {fileID: 477020406}
   - component: {fileID: 477020405}
+  - component: {fileID: 477020408}
+  - component: {fileID: 477020407}
   m_Layer: 0
   m_Name: Mesh Drawer
   m_TagString: Untagged
@@ -235,6 +237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ee5406632ea4be5bdda8d4459058f24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  index: 
 --- !u!4 &477020406
 Transform:
   m_ObjectHideFlags: 0
@@ -249,6 +252,55 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!23 &477020407
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477020404}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 08a6f092a8c8ebed7a8fbab012924ca1, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &477020408
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477020404}
+  m_Mesh: {fileID: 0}
 --- !u!1 &947589963
 GameObject:
   m_ObjectHideFlags: 0
@@ -293,7 +345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useCullingMasks: 0
-  points: {fileID: 11400000, guid: eb2dd24e73dea6f40b48c30a904ad481, type: 2}
+  points: {fileID: 11400000, guid: 8827fe950cf91644897b2db716f9d382, type: 2}
   meshDrawer: {fileID: 477020405}
   displayData: {fileID: 11400000, guid: 9f0ce1e57b8c1c94c94c7e01f9d393b9, type: 2}
 --- !u!1 &1200326912

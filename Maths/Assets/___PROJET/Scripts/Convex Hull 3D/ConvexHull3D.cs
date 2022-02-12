@@ -81,10 +81,14 @@ namespace ESGI.ConvexHull3D
                         continue;
                     }
                     RemoveBlueElements();
-                    CombineWithPurpleGraph(point, q);
+                    CombineWithPurpleGraph(point, _convexHull.vertices.Count);
                 }
             }
             Drawing.Draw.WireSphere(points.MaxQPoint, 0.5f, PGColors.Redish);
+            for(int i = 0; i < _convexHull.vertices.Count; ++i)
+            {
+                _convexHull.vertices[i].index = i;
+            }
         }
 
         private void CombineWithPurpleGraph(Vector3 point, int index)
