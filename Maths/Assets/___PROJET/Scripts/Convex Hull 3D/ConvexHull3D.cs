@@ -15,7 +15,7 @@ namespace ESGI.ConvexHull3D
 {
     public class ConvexHull3D : ImmediateModeShapeDrawer
     {
-        [SerializeField] private Points3D points;
+        [SerializeField] private Points3DBase points;
         [SerializeField] private MeshDrawer meshDrawer;
 
         public DisplayData Data => displayData;
@@ -28,7 +28,6 @@ namespace ESGI.ConvexHull3D
         {
             ComputeHull();
             meshDrawer.DrawMesh(_convexHull);
-            PGDebug.Message($"FINISH FRAME --------------------").Log();
         }
 
         private void OnDrawGizmos()
@@ -57,7 +56,7 @@ namespace ESGI.ConvexHull3D
             _convexHull = ComputeTetrahedre();
             for (var q = 4; q <= points.MaxQ; q++)
             {
-                var point = points.positions[q];
+                var point = points.Positions[q];
                 ComputeBlueAndRedFaces(point);
                 var pointIsInsideConvexHull = _convexHull.faces.All(face3D => face3D.color != Node.NodeColor.Blue);
                 if (pointIsInsideConvexHull)
@@ -78,12 +77,14 @@ namespace ESGI.ConvexHull3D
                         continue;
                     }
                     RemoveBlueElements();
-                    PGDebug.Message($"Before Combining with purple{_convexHull.vertices.Count}").Log();
-                    CombineWithPurpleGraph(point, q);
-                    PGDebug.Message($"After Combining with purple{_convexHull.vertices.Count}").Log();
+                    CombineWithPurpleGraph(point, _convexHull.vertices.Count);
                 }
             }
             Drawing.Draw.WireSphere(points.MaxQPoint, 0.5f, PGColors.Redish);
+            for(int i = 0; i < _convexHull.vertices.Count; ++i)
+            {
+                _convexHull.vertices[i].index = i;
+            }
         }
 
         private void CombineWithPurpleGraph(Vector3 point, int index)
@@ -278,14 +279,14 @@ namespace ESGI.ConvexHull3D
 
         private IncidenceGraph ComputeTetrahedre()
         {
-            if (points.positions.Count < 4)
+            if (points.Positions.Count < 4)
             {
                 PGDebug.Message($"Pas assez de points dans {points.name} (au moins 4)").LogError();
             }
 
             var iGraph = new IncidenceGraph();
 
-            var four = points.positions.Take(4).ToList();
+            var four = points.Positions.Take(4).ToList();
             
             var vertices = four.Select((point, i) => new Vertex3D(point, i)).ToList();
 

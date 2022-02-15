@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1705099d37e54f9fb74275b178a7e794, type: 3}
   m_Name: POINTS 3D 4 points
   m_EditorClassIdentifier: 
+  maxQ: 3
+  stopAtColoring: 0
   positions:
   - {x: -5, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}

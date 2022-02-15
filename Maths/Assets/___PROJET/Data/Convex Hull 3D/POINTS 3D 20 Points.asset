@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1705099d37e54f9fb74275b178a7e794, type: 3}
-  m_Name: POINTS 3D 5 Points
+  m_Name: POINTS 3D 20 Points
   m_EditorClassIdentifier: 
   maxQ: 19
   stopAtColoring: 0
