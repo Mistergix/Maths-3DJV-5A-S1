@@ -28,6 +28,7 @@ namespace ESGI.ConvexHull3D
         {
             ComputeHull();
             meshDrawer.DrawMesh(_convexHull);
+            PGDebug.Message($"FINISH FRAME --------------------").Log();
         }
 
         private void OnDrawGizmos()
@@ -53,12 +54,8 @@ namespace ESGI.ConvexHull3D
         [Button]
         public void ComputeHull()
         {
-            PGDebug.Message(
-                    $"C'est ici qu'il faudrait checker s'il y a des points coplanaires (plus de 4), par forcément tous entre eux mais par morceaux, et calculer leur convex hull 2d et ne garder que ces points. Puis s'il reste moins de 4 points, ne mettre qu'un triangle")
-                .LogTodo();
-            
             _convexHull = ComputeTetrahedre();
-            for (int q = 4; q <= points.MaxQ; q++)
+            for (var q = 4; q <= points.MaxQ; q++)
             {
                 var point = points.positions[q];
                 ComputeBlueAndRedFaces(point);
@@ -81,7 +78,9 @@ namespace ESGI.ConvexHull3D
                         continue;
                     }
                     RemoveBlueElements();
+                    PGDebug.Message($"Before Combining with purple{_convexHull.vertices.Count}").Log();
                     CombineWithPurpleGraph(point, q);
+                    PGDebug.Message($"After Combining with purple{_convexHull.vertices.Count}").Log();
                 }
             }
             Drawing.Draw.WireSphere(points.MaxQPoint, 0.5f, PGColors.Redish);

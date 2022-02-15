@@ -7,7 +7,7 @@ namespace ESGI.ConvexHull3D
     {
         public void DrawMesh(IncidenceGraph convexHull)
         {
-            PGDebug.Message($"DRAW MESH CEDRIC, {convexHull.vertices.Count} vertices et {convexHull.faces.Count} faces").LogTodo();
+           // PGDebug.Message($"DRAW MESH CEDRIC, {convexHull.vertices.Count} vertices et {convexHull.faces.Count} faces").LogTodo();
         }
     }
 }
