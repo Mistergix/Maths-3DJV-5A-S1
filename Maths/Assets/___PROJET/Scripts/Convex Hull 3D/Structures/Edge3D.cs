@@ -9,9 +9,6 @@
         {
             p1 = a;
             p2 = b;
-
-            p1.AddEdge(this);
-            p2.AddEdge(this);
         }
 
         public bool EqualsTwoVertices(Vertex3D begin, Vertex3D end)

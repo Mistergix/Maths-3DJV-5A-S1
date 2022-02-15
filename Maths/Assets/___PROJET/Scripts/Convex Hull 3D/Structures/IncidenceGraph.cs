@@ -2,6 +2,7 @@
 using System.Linq;
 using ESGI.Common;
 using Shapes;
+using UnityEngine;
 
 namespace ESGI.ConvexHull3D
 {
@@ -17,6 +18,8 @@ namespace ESGI.ConvexHull3D
             edges = new List<Edge3D>();
             faces = new List<Face3D>();
         }
+
+        public Vertex3D Center { get; private set; }
 
         public void AddVertices(List<Vertex3D> v)
         {
@@ -37,14 +40,14 @@ namespace ESGI.ConvexHull3D
         {
             foreach (var point in vertices)
             {
-                Shapes.Draw.Disc(point.position, data.pointSize, point.GetColorFromNodeColor());
+                Draw.Disc(point.position, data.pointSize, point.GetColorFromNodeColor());
             }
             
             foreach (var edge in edges)
             {
-                Shapes.Draw.UseDashes = true;
-                Shapes.Draw.DashStyle = DashStyle.defaultDashStyle;
-                Shapes.Draw.Line(edge.p1.position, edge.p2.position, edge.GetColorFromNodeColor());
+                Draw.UseDashes = true;
+                Draw.DashStyle = DashStyle.defaultDashStyle;
+                Draw.Line(edge.p1.position, edge.p2.position, edge.GetColorFromNodeColor());
             }
 
             foreach (var face in faces)
@@ -74,6 +77,14 @@ namespace ESGI.ConvexHull3D
         public Vertex3D GetOtherPoint(Vertex3D p1, Vertex3D p2, Vertex3D p3)
         {
             return vertices.FirstOrDefault(v => !v.Equals(p1) && !v.Equals(p2) && !v.Equals(p3));
+        }
+
+        public void ComputeCenter()
+        {
+            var center = new Vector3();
+            center = vertices.Aggregate(center, (current, vertex) => current + vertex.position);
+            center /= vertices.Count;
+            Center = new Vertex3D(center);
         }
     }
 }

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -347,6 +347,7 @@ MonoBehaviour:
   useCullingMasks: 0
   points: {fileID: 11400000, guid: 8827fe950cf91644897b2db716f9d382, type: 2}
   meshDrawer: {fileID: 477020405}
+  draw: 1
   displayData: {fileID: 11400000, guid: 9f0ce1e57b8c1c94c94c7e01f9d393b9, type: 2}
 --- !u!1 &1200326912
 GameObject:

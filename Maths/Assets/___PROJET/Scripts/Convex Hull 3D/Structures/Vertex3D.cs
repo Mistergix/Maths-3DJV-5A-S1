@@ -7,19 +7,23 @@ namespace ESGI.ConvexHull3D
     public class Vertex3D : Node
     {
         public Vector3 position;
-        public List<Edge3D> edges;
         public int index;
         public Vertex3D(Vector3 position, int index)
         {
             this.index = index;
             this.position = position;
-            edges = new List<Edge3D>();
         }
 
-        public void AddEdge(Edge3D edge3D)
+        public Vertex3D(Vector3 vector3)
         {
-            edges.Add(edge3D);
+            position = vector3;
         }
+
+        public float X => position.x;
+        public float Y => position.y;
+        public float Z => position.z;
+
+        public float SqrMagnitude => position.sqrMagnitude;
 
         public override string ToString()
         {

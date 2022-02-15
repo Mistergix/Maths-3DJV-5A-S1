@@ -17,6 +17,7 @@ namespace ESGI.ConvexHull3D
     {
         [SerializeField] private Points3DBase points;
         [SerializeField] private MeshDrawer meshDrawer;
+        [SerializeField] private bool draw;
 
         public DisplayData Data => displayData;
 
@@ -32,6 +33,7 @@ namespace ESGI.ConvexHull3D
 
         private void OnDrawGizmos()
         {
+            if(!draw) {return;}
             if(_convexHull == null){return;}
             foreach (var vertex in _convexHull.vertices)
             {
@@ -42,6 +44,7 @@ namespace ESGI.ConvexHull3D
 
         public override void DrawShapes(Camera cam)
         {
+            if(!draw) {return;}
             base.DrawShapes(cam);
             using (Draw.Command(cam))
             {
@@ -50,19 +53,23 @@ namespace ESGI.ConvexHull3D
             }
         }
 
-        [Button]
-        public void ComputeHull()
+        private void ComputeHull()
         {
-            _convexHull = ComputeTetrahedre();
+           _convexHull = ComputeHull(points);
+        }
+
+        public static IncidenceGraph ComputeHull(Points3DBase points)
+        {
+            var convexHull = ComputeTetrahedre(points);
             for (var q = 4; q <= points.MaxQ; q++)
             {
                 var point = points.Positions[q];
-                ComputeBlueAndRedFaces(point);
-                var pointIsInsideConvexHull = _convexHull.faces.All(face3D => face3D.color != Node.NodeColor.Blue);
+                ComputeBlueAndRedFaces(convexHull, point);
+                var pointIsInsideConvexHull = convexHull.faces.All(face3D => face3D.color != Node.NodeColor.Blue);
                 if (pointIsInsideConvexHull)
                 {
                     // 2A
-                    foreach (var edge in _convexHull.edges)
+                    foreach (var edge in convexHull.edges)
                     {
                         edge.SetColor(Node.NodeColor.None);
                     }
@@ -70,34 +77,38 @@ namespace ESGI.ConvexHull3D
                 else
                 {
                     //2B
-                    ColorEdges();
-                    ColorVertices();
+                    ColorEdges(convexHull);
+                    ColorVertices(convexHull);
                     if (points.stopAtColoring && q == points.MaxQ)
                     {
                         continue;
                     }
-                    RemoveBlueElements();
-                    CombineWithPurpleGraph(point, _convexHull.vertices.Count);
+                    RemoveBlueElements(convexHull);
+                    CombineWithPurpleGraph(convexHull, point, convexHull.vertices.Count);
                 }
             }
             Drawing.Draw.WireSphere(points.MaxQPoint, 0.5f, PGColors.Redish);
-            for(int i = 0; i < _convexHull.vertices.Count; ++i)
+            for(var i = 0; i < convexHull.vertices.Count; ++i)
             {
-                _convexHull.vertices[i].index = i;
+                convexHull.vertices[i].index = i;
             }
+
+            convexHull.ComputeCenter();
+
+            return convexHull;
         }
 
-        private void CombineWithPurpleGraph(Vector3 point, int index)
+        private static void CombineWithPurpleGraph(IncidenceGraph convexHull, Vector3 point, int index)
         {
-            var purpleIGraph = _convexHull.GetPurpleGraph();
+            var purpleIGraph = convexHull.GetPurpleGraph();
             var pointVertex = new Vertex3D(point, index);
-            var newEdges = CreateEdgesFromPurpleGraph(purpleIGraph, pointVertex);
-            var newFaces = CreateNewFaces(purpleIGraph, pointVertex);
+            var newEdges = CreateEdgesFromPurpleGraph(convexHull, purpleIGraph, pointVertex);
+            var newFaces = CreateNewFaces(convexHull, purpleIGraph, pointVertex);
             ConnectFacesAndEdges(newEdges, newFaces, pointVertex);
-            _convexHull.vertices.Add(pointVertex);
+            convexHull.vertices.Add(pointVertex);
         }
 
-        private void ConnectFacesAndEdges(List<Edge3D> newEdges, List<Face3D> newFaces, Vertex3D pointVertex)
+        private static void ConnectFacesAndEdges(List<Edge3D> newEdges, List<Face3D> newFaces, Vertex3D pointVertex)
         {
             foreach (var edge in newEdges)
             {
@@ -113,7 +124,7 @@ namespace ESGI.ConvexHull3D
             }
         }
 
-        private List<Face3D> CreateNewFaces(IncidenceGraph purpleIGraph, Vertex3D pointVertex)
+        private static List<Face3D> CreateNewFaces(IncidenceGraph convexHull, IncidenceGraph purpleIGraph, Vertex3D pointVertex)
         {
             var newFaces = new List<Face3D>();
 
@@ -121,14 +132,14 @@ namespace ESGI.ConvexHull3D
             {
                 var face = GetRedFace(edge);
                 var (begin, end) = GetOrderedVertices(face, edge);
-                var newFace = CreateNewFace(begin, end, pointVertex, edge);
+                var newFace = CreateNewFace(convexHull, begin, end, pointVertex, edge);
                 newFaces.Add(newFace);
             }
 
             return newFaces;
         }
 
-        private void TryConnectFaceToEdge(Edge3D edge, Face3D face, Vertex3D pointVertex)
+        private static void TryConnectFaceToEdge(Edge3D edge, Face3D face, Vertex3D pointVertex)
         {
             // WE KNOW pointVertex belongs to edge AND face
             // We look at other vertex in edge, and see if it belongs to face
@@ -153,30 +164,30 @@ namespace ESGI.ConvexHull3D
             }
         }
 
-        private bool IsBeginVertexOnFace(Edge3D edge, Vertex3D testedVertex, Face3D face)
+        private static bool IsBeginVertexOnFace(Edge3D edge, Vertex3D testedVertex, Face3D face)
         {
             var (begin, end) = GetOrderedVertices(face, edge);
             return testedVertex.Equals(begin);
         }
 
-        private List<Edge3D> CreateEdgesFromPurpleGraph(IncidenceGraph purpleIGraph, Vertex3D pointVertex)
+        private static List<Edge3D> CreateEdgesFromPurpleGraph(IncidenceGraph convexHull, IncidenceGraph purpleIGraph, Vertex3D pointVertex)
         {
             var newEdges = new List<Edge3D>();
 
             foreach (var vertex in purpleIGraph.vertices)
             {
                 var edge = new Edge3D(pointVertex, vertex);
-                _convexHull.edges.Add(edge);
+                convexHull.edges.Add(edge);
                 newEdges.Add(edge);
             }
 
             return newEdges;
         }
 
-        private Face3D CreateNewFace(Vertex3D begin, Vertex3D end, Vertex3D pointVertex, Edge3D edge)
+        private static Face3D CreateNewFace(IncidenceGraph convexHull, Vertex3D begin, Vertex3D end, Vertex3D pointVertex, Edge3D edge)
         {
-            var newFace = new Face3D(begin, end, pointVertex, _convexHull);
-            _convexHull.faces.Add(newFace);
+            var newFace = new Face3D(begin, end, pointVertex, convexHull);
+            convexHull.faces.Add(newFace);
             if (edge.face1.color == Node.NodeColor.Blue)
             {
                 edge.face1 = newFace;
@@ -220,16 +231,16 @@ namespace ESGI.ConvexHull3D
             return edge.face1.color == Node.NodeColor.Red ? edge.face1 : edge.face2;
         }
 
-        private void RemoveBlueElements()
+        private static void RemoveBlueElements(IncidenceGraph convexHull)
         {
-            _convexHull.RemoveBlueElements();
+            convexHull.RemoveBlueElements();
         }
 
-        private void ColorVertices()
+        private static void ColorVertices(IncidenceGraph convexHull)
         {
-            var blueEdges = _convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Blue).ToList();
-            var redEdge3Ds = _convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Red).ToList();
-            var purpleEdges = _convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Purple).ToList();
+            var blueEdges = convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Blue).ToList();
+            var redEdge3Ds = convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Red).ToList();
+            var purpleEdges = convexHull.edges.Where(edge3D => edge3D.color == Node.NodeColor.Purple).ToList();
 
             foreach (var edge3D in redEdge3Ds)
             {
@@ -250,9 +261,9 @@ namespace ESGI.ConvexHull3D
             }
         }
 
-        private void ColorEdges()
+        private static void ColorEdges(IncidenceGraph convexHull)
         {
-            foreach (var edge in _convexHull.edges)
+            foreach (var edge in convexHull.edges)
             {
                 if (edge.face1.color == Node.NodeColor.Red && edge.face2.color == Node.NodeColor.Red)
                 {
@@ -269,15 +280,15 @@ namespace ESGI.ConvexHull3D
             }
         }
 
-        private void ComputeBlueAndRedFaces(Vector3 point)
+        private static void ComputeBlueAndRedFaces(IncidenceGraph convexHull, Vector3 point)
         {
-            foreach (var face in _convexHull.faces)
+            foreach (var face in convexHull.faces)
             {
-                face.SetColorFromPoint(_convexHull, point);
+                face.SetColorFromPoint(convexHull, point);
             }
         }
 
-        private IncidenceGraph ComputeTetrahedre()
+        private static IncidenceGraph ComputeTetrahedre(Points3DBase points)
         {
             if (points.Positions.Count < 4)
             {
