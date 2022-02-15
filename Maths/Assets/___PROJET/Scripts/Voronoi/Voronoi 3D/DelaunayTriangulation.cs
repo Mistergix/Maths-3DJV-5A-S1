@@ -67,10 +67,9 @@ namespace ESGI.Voronoi.Voronoi3D
         }
 
         private bool FilterFace(Face3D face)
-        {
+        { 
             PGDebug.Message($"FILTER FACE").LogTodo();
-           // face.Normal[Dimension] >= 0.0f
-           return false;
+            return false;
         }
 
         private float Minor(int r0, int r1, int r2, int c0, int c1, int c2)

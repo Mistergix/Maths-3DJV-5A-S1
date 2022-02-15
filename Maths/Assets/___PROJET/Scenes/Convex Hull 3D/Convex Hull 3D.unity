@@ -345,7 +345,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   useCullingMasks: 0
-  points: {fileID: 11400000, guid: 8827fe950cf91644897b2db716f9d382, type: 2}
+  points: {fileID: 11400000, guid: eb2dd24e73dea6f40b48c30a904ad481, type: 2}
   meshDrawer: {fileID: 477020405}
   draw: 1
   displayData: {fileID: 11400000, guid: 9f0ce1e57b8c1c94c94c7e01f9d393b9, type: 2}
